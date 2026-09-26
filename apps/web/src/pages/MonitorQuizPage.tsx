@@ -70,7 +70,7 @@ export const MonitorQuizPage: React.FC = () => {
           </CardContent>
         </Card>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Student Access */}
           <Card className="bg-green-50 border-green-200">
             <CardContent className="pt-4 flex flex-col gap-2">
@@ -133,7 +133,7 @@ export const MonitorQuizPage: React.FC = () => {
                   </div>
                 </div>
                 <Progress value={q.correctPercentage} className="h-1.5" />
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {(q.options as string[]).map((opt, oIdx) => {
                     const count = q.optionCounts[oIdx] || 0;
                     const isCorrect = q.correctIndex === oIdx;

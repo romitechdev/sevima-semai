@@ -35,7 +35,7 @@ export const LandingPage: React.FC = () => {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-5xl mx-auto w-full my-12 grid grid-cols-2 gap-12">
+      <div className="max-w-5xl mx-auto w-full my-12 grid grid-cols-1 sm:grid-cols-2 gap-12">
         {/* Left Column */}
         <div className="flex flex-col gap-6">
           <span className="text-xs font-semibold text-blue-600 bg-blue-50 px-3 py-1 border border-blue-200 rounded self-start">
@@ -49,7 +49,7 @@ export const LandingPage: React.FC = () => {
             Sistem terintegrasi untuk pendidik dan peserta didik di Indonesia. Menyediakan penanganan kuis formatif real-time, penyusun materi pembelajaran AI, koreksi esai otomatis, hingga narasi rapor Kurikulum Merdeka.
           </p>
 
-          <div className="grid grid-cols-2 gap-4 pt-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
             <div className="p-4 bg-white border border-neutral-200 rounded-md">
               <p className="text-sm font-bold text-neutral-900">Respons Real-time</p>
               <p className="text-xs text-neutral-500 mt-1">Pemantauan hasil kuis siswa di kelas</p>

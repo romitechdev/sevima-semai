@@ -93,16 +93,16 @@ export const LoginPage: React.FC = () => {
               {isRegister && (
                 <div className="flex flex-col gap-1">
                   <Label>Nama Lengkap Guru</Label>
-                  <Input placeholder="Contoh: Rina S.Pd" value={name} onChange={(e) => setName(e.target.value)} required />
+                  <Input placeholder="Contoh: Rina S.Pd" value={name} onChange={(e) => setName(e.target.value)} required aria-label="Nama lengkap guru" />
                 </div>
               )}
               <div className="flex flex-col gap-1">
                 <Label>Email Sekolah / Pribadi</Label>
-                <Input type="email" placeholder="nama@sekolah.sch.id" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                <Input type="email" placeholder="nama@sekolah.sch.id" value={email} onChange={(e) => setEmail(e.target.value)} required aria-label="Email" />
               </div>
               <div className="flex flex-col gap-1">
                 <Label>Kata Sandi</Label>
-                <Input type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required />
+                <Input type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required aria-label="Kata sandi" />
               </div>
               <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white" disabled={loading}>
                 {loading ? "Memproses..." : isRegister ? "Daftar Akun Guru" : "Masuk Dashboard"}

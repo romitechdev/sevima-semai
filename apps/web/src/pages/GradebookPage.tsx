@@ -108,7 +108,7 @@ export const GradebookPage: React.FC = () => {
             <CardContent className="pt-5 flex flex-col gap-4">
               <h3 className="text-base font-semibold text-neutral-800">Catat Nilai Baru</h3>
               <form onSubmit={handleAddManualGrade}>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="flex flex-col gap-1">
                     <Label>Nama Siswa</Label>
                     <Input placeholder="Contoh: Ahmad Rizky" value={manualName} onChange={(e) => setManualName(e.target.value)} required />
@@ -167,7 +167,7 @@ export const GradebookPage: React.FC = () => {
                   <p className="text-sm text-neutral-700 leading-relaxed">{aiReport.holisticNarrative}</p>
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="flex flex-col gap-1">
                   <p className="text-xs font-semibold text-green-700 uppercase">Keunggulan & Karakter Positif</p>
                   <div className="flex flex-col gap-1">
@@ -254,7 +254,7 @@ export const GradebookPage: React.FC = () => {
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               {data.students.map((st) => (
                 <Card key={st.studentName}>
                   <CardContent className="pt-4 flex flex-col gap-3">

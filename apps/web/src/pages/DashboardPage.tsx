@@ -64,7 +64,7 @@ export const DashboardPage: React.FC = () => {
     <DashboardLayout>
       <div className="flex flex-col gap-6">
         {/* Metric Summary Cards */}
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {[
             { label: "Total Kuis Formatif", value: totalQuizzes, desc: "Kuis terdaftar dalam sistem" },
             { label: "Siswa Terdaftar", value: totalStudentsCount, desc: "Siswa dalam Gradebook" },
@@ -90,7 +90,7 @@ export const DashboardPage: React.FC = () => {
             <form onSubmit={handleAgentSubmit}>
               <div className="flex gap-2 flex-wrap">
                 <Input
-                  placeholder="Contoh: Buatkan 5 soal kuis tentang fotosintesis untuk kelas 5 SD"
+                  placeholder="Contoh: Buatkan 5 soal kuis tentang fotosintesis untuk kelas 5 SD" aria-label="Instruksi untuk AI Agent"
                   value={agentInput}
                   onChange={(e) => setAgentInput(e.target.value)}
                   className="flex-1"
@@ -146,11 +146,15 @@ export const DashboardPage: React.FC = () => {
                 </p>
               </div>
             ) : (
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {quizzes.map((q) => (
                   <div
                     key={q.id}
                     onClick={() => navigate(`/monitor/${q.id}`)}
+                    onKeyDown={(e) => e.key === "Enter" && navigate(`/monitor/${q.id}`)}
+                    role="link"
+                    tabIndex={0}
+                    aria-label={`Lihat detail kuis ${q.title}`}
                     className="p-4 border border-neutral-200 bg-white rounded-md cursor-pointer hover:border-blue-300 hover:bg-blue-50 transition-colors"
                   >
                     <div className="flex flex-col gap-2">

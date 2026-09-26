@@ -99,7 +99,7 @@ export const CreateMaterialPage: React.FC = () => {
 
               <div className="flex flex-col gap-2">
                 <p className="text-xs font-semibold text-neutral-500 uppercase">Poin-Poin Kunci (Key Takeaways)</p>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {generatedMaterial.keyPoints.map((pt, i) => (
                     <div key={i} className="flex items-start gap-2 p-3 bg-white border border-neutral-200 rounded">
                       <span className="text-xs text-blue-600 font-bold">•</span>

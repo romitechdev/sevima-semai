@@ -130,7 +130,7 @@ export const CreateQuizPage: React.FC = () => {
           <Card>
             <CardContent className="pt-5 flex flex-col gap-4">
               <h4 className="text-sm font-semibold text-neutral-700">Informasi Kuis</h4>
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="flex flex-col gap-1">
                   <Label>Judul Kuis / Topik</Label>
                   <Input placeholder="Misal: Pecahan & Desimal" value={title} onChange={(e) => setTitle(e.target.value)} required />
@@ -167,7 +167,7 @@ export const CreateQuizPage: React.FC = () => {
                   <Label>Pertanyaan</Label>
                   <Input placeholder={`Tulis pertanyaan soal nomor ${qIdx + 1}`} value={q.text} onChange={(e) => updateQuestionText(qIdx, e.target.value)} required />
                 </div>
-                <div className="grid grid-cols-2 gap-2 pt-1">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
                   {q.options.map((opt, oIdx) => (
                     <div
                       key={oIdx}

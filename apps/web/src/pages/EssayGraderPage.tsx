@@ -115,7 +115,7 @@ export const EssayGraderPage: React.FC = () => {
                   <p className="text-sm text-neutral-700 leading-relaxed">{evaluation.feedback}</p>
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="flex flex-col gap-2">
                   <p className="text-xs font-semibold text-green-700 uppercase">Kelebihan Jawaban</p>
                   <div className="flex flex-col gap-1">
