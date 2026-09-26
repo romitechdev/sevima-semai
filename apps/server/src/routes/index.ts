@@ -4,7 +4,6 @@ import { materialRouter } from "./material.js";
 import { essayRouter } from "./essay.js";
 import { documentRouter } from "./document.js";
 import { agentRouter } from "./agent.js";
-import { assessmentRouter } from "./assessment.js";
 import { gradebookRouter } from "./gradebook.js";
 
 export const healthRouter = router({
@@ -18,7 +17,6 @@ export const appRouter = router({
   essay: essayRouter,
   document: documentRouter,
   agent: agentRouter,
-  assessment: assessmentRouter,
   gradebook: gradebookRouter,
 });
 

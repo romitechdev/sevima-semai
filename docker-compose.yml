@@ -1,0 +1,23 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        VITE_SUPABASE_URL: https://gtjtkocgzimmpqulkdwe.supabase.co
+        VITE_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd0anRrb2NnemltbXBxdWxrZHdlIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc5MDI3ODEyOCwiZXhwIjoyMTA1ODU0MTI4fQ.KIlIka_ciLFuV101rDej0hE3v1aciiu1KJIuPolfULs
+    ports:
+      - "3000:80"
+    depends_on:
+      - server
+    restart: unless-stopped
+
+  server:
+    build:
+      context: .
+      dockerfile: apps/server/Dockerfile
+    environment:
+      PORT: "3002"
+      SUPABASE_URL: https://gtjtkocgzimmpqulkdwe.supabase.co
+      SUPABASE_SERVICE_ROLE_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd0anRrb2NnemltbXBxdWxrZHdlIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc5MDI3ODEyOCwiZXhwIjoyMTA1ODU0MTI4fQ.KIlIka_ciLFuV101rDej0hE3v1aciiu1KJIuPolfULs
+    restart: unless-stopped

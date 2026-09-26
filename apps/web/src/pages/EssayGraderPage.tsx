@@ -3,10 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { trpc } from "../lib/trpc";
 import { useAuth } from "../context/AuthContext";
 import { DashboardLayout } from "../components/DashboardLayout";
-import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card";
-import { Input } from "../components/ui/input";
-import { Label } from "../components/ui/label";
-import { Button } from "../components/ui/button";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Label } from "@/components/ui/label";
 
 export const EssayGraderPage: React.FC = () => {
   const { user } = useAuth();
@@ -18,18 +21,9 @@ export const EssayGraderPage: React.FC = () => {
   const [studentName, setStudentName] = useState("");
   const [error, setError] = useState<string | null>(null);
 
-  const { data: gradebookData } = trpc.gradebook.listByTeacher.useQuery(
-    { teacherId: user?.id || "" },
-    { enabled: !!user }
-  );
-
   const [evaluation, setEvaluation] = useState<{
-    score: number;
-    maxScore: number;
-    feedback: string;
-    strengths: string[];
-    improvements: string[];
-    suggestedCorrection: string;
+    score: number; maxScore: number; feedback: string;
+    strengths: string[]; improvements: string[]; suggestedCorrection: string;
   } | null>(null);
 
   const evaluateMutation = trpc.essay.evaluate.useMutation();
@@ -37,17 +31,13 @@ export const EssayGraderPage: React.FC = () => {
   const handleEvaluate = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-
     if (!question || !rubricOrKey || !studentAnswer) {
       setError("Silakan lengkapi semua kolom (Soal, Kunci/Rubrik, Jawaban Siswa)");
       return;
     }
-
     try {
       const res = await evaluateMutation.mutateAsync({
-        question,
-        rubricOrKey,
-        studentAnswer,
+        question, rubricOrKey, studentAnswer,
         studentName: studentName || undefined,
         teacherId: user?.id || undefined,
       });
@@ -59,157 +49,100 @@ export const EssayGraderPage: React.FC = () => {
 
   return (
     <DashboardLayout>
-      <div className="max-w-4xl mx-auto space-y-6">
-        <div className="flex items-center justify-between bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
-          <div>
-            <h1 className="text-xl font-bold text-slate-900">Koreksi Esai & Teks Otomatis</h1>
-            <p className="text-slate-500 text-xs">Semai 🌱 — Penilaian Jawaban Esai Berbasis AI</p>
-          </div>
-          <Button variant="outline" className="text-xs rounded-xl" onClick={() => navigate("/dashboard")}>
-            Batal
-          </Button>
-        </div>
-
-        {error && (
-          <div className="p-3 bg-red-50 text-red-600 text-sm rounded-md border border-red-200">
-            {error}
-          </div>
-        )}
-
-        <Card className="border-emerald-200 bg-white shadow-sm">
-          <CardHeader>
-            <CardTitle className="text-lg text-emerald-900 flex items-center gap-2">
-              <span>✍️</span> Form Input Penilaian Esai
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleEvaluate} className="space-y-4">
-              <div className="space-y-1">
-                <Label htmlFor="sName">Nama Siswa (Opsional - Integrasi ke Gradebook)</Label>
-                <Input
-                  id="sName"
-                  placeholder="Contoh: Ahmad Rizky (Isi agar nilai otomatis tercatat ke Gradebook)"
-                  value={studentName}
-                  onChange={(e) => setStudentName(e.target.value)}
-                  list="students-datalist-essay"
-                />
-                <datalist id="students-datalist-essay">
-                  {(gradebookData?.students || []).map((s) => (
-                    <option key={s.studentName} value={s.studentName} />
-                  ))}
-                </datalist>
+      <div className="max-w-4xl mx-auto flex flex-col gap-6">
+        {/* Header */}
+        <Card>
+          <CardContent className="pt-5">
+            <div className="flex items-center justify-between flex-wrap gap-4">
+              <div>
+                <h2 className="text-xl font-bold text-neutral-900">Koreksi Esai & Teks Otomatis</h2>
+                <p className="text-xs text-neutral-500">Semai · Penilaian Jawaban Esai Berbasis AI</p>
               </div>
+              <Button variant="outline" size="sm" onClick={() => navigate("/dashboard")}>Batal</Button>
+            </div>
+          </CardContent>
+        </Card>
 
-              <div className="space-y-1">
-                <Label htmlFor="question">Pertanyaan / Soal Esai</Label>
-                <Input
-                  id="question"
-                  placeholder="Contoh: Jelaskan dampak fotosintesis terhadap siklus oksigen di bumi!"
-                  value={question}
-                  onChange={(e) => setQuestion(e.target.value)}
-                  required
-                />
+        {error && <Alert variant="destructive"><AlertDescription>{error}</AlertDescription></Alert>}
+
+        {/* Form */}
+        <Card>
+          <CardContent className="pt-5 flex flex-col gap-4">
+            <h3 className="text-base font-semibold text-neutral-900">Form Input Penilaian Esai</h3>
+            <form onSubmit={handleEvaluate} className="flex flex-col gap-4">
+              <div className="flex flex-col gap-1">
+                <Label>Nama Siswa (Opsional - Integrasi ke Gradebook)</Label>
+                <Input placeholder="Contoh: Ahmad Rizky" value={studentName} onChange={(e) => setStudentName(e.target.value)} />
               </div>
-
-              <div className="space-y-1">
-                <Label htmlFor="rubric">Kunci Jawaban / Kriteria Rubrik Penilaian</Label>
-                <textarea
-                  id="rubric"
-                  rows={3}
-                  className="w-full p-2.5 text-sm border rounded-md border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                  placeholder="Contoh: Poin penting: (1) Menghasilkan O2 dari H2O dan CO2, (2) Mendukung respirasi makhluk hidup, (3) Menjaga kestabilan atmosfer."
-                  value={rubricOrKey}
-                  onChange={(e) => setRubricOrKey(e.target.value)}
-                  required
-                />
+              <div className="flex flex-col gap-1">
+                <Label>Pertanyaan / Soal Esai</Label>
+                <Input placeholder="Contoh: Jelaskan dampak fotosintesis terhadap siklus oksigen di bumi!" value={question} onChange={(e) => setQuestion(e.target.value)} required />
               </div>
-
-              <div className="space-y-1">
-                <Label htmlFor="studentAnswer">Jawaban Teks Siswa</Label>
-                <textarea
-                  id="studentAnswer"
-                  rows={4}
-                  className="w-full p-2.5 text-sm border rounded-md border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono"
-                  placeholder="Ketik atau tempel teks jawaban siswa di sini..."
-                  value={studentAnswer}
-                  onChange={(e) => setStudentAnswer(e.target.value)}
-                  required
-                />
+              <div className="flex flex-col gap-1">
+                <Label>Kunci Jawaban / Kriteria Rubrik Penilaian</Label>
+                <Textarea rows={3} placeholder="Contoh: Poin penting: (1) Menghasilkan O2 dari H2O dan CO2, (2) Mendukung respirasi makhluk hidup, (3) Menjaga kestabilan atmosfer." value={rubricOrKey} onChange={(e) => setRubricOrKey(e.target.value)} required />
               </div>
-
-              <Button
-                type="submit"
-                className="w-full bg-emerald-600 hover:bg-emerald-700 font-semibold"
-                disabled={evaluateMutation.isPending}
-              >
-                {evaluateMutation.isPending ? "AI Sedang Mengoreksi..." : "Koreksi Jawaban Otomatis 🚀"}
+              <div className="flex flex-col gap-1">
+                <Label>Jawaban Teks Siswa</Label>
+                <Textarea rows={4} className="font-mono" placeholder="Ketik atau tempel teks jawaban siswa di sini..." value={studentAnswer} onChange={(e) => setStudentAnswer(e.target.value)} required />
+              </div>
+              <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white" disabled={evaluateMutation.isPending}>
+                {evaluateMutation.isPending ? "AI Sedang Mengoreksi..." : "Koreksi Jawaban Otomatis"}
               </Button>
             </form>
           </CardContent>
         </Card>
 
+        {/* Result */}
         {evaluation && (
-          <Card className="border-emerald-300 bg-emerald-50/20">
-            <CardHeader className="flex flex-col md:flex-row md:items-center justify-between gap-2 border-b pb-4">
-              <div>
-                <CardTitle className="text-xl font-bold text-slate-800">
-                  Hasil Penilaian AI
-                </CardTitle>
-                <div className="text-xs text-slate-500 mt-1">Ulasan otomatis berdasarkan rubrik</div>
-              </div>
-              <div className="bg-white px-6 py-2 rounded-xl border border-emerald-200 text-center shadow-sm">
-                <div className="text-xs text-emerald-700 uppercase font-semibold">Skor Akhir</div>
-                <div className="text-3xl font-black text-emerald-800">
-                  {evaluation.score} <span className="text-sm font-medium text-slate-400">/ {evaluation.maxScore}</span>
+          <Card>
+            <CardContent className="pt-5 flex flex-col gap-4">
+              <div className="flex items-center justify-between flex-wrap gap-2 border-b pb-4">
+                <div>
+                  <h3 className="text-lg font-bold text-neutral-900">Hasil Penilaian AI</h3>
+                  <p className="text-xs text-neutral-500 mt-1">Ulasan otomatis berdasarkan rubrik</p>
+                </div>
+                <div className="bg-white px-6 py-2 border border-neutral-200 rounded text-center">
+                  <p className="text-xs font-semibold text-blue-600 uppercase">Skor Akhir</p>
+                  <p className="text-2xl font-black text-neutral-900">
+                    {evaluation.score} <span className="text-sm text-neutral-400 font-medium">/ {evaluation.maxScore}</span>
+                  </p>
                 </div>
               </div>
-            </CardHeader>
-            <CardContent className="space-y-4 pt-4">
-              <div>
-                <h3 className="text-sm font-bold text-emerald-800 uppercase tracking-wide mb-1">
-                  Catatan & Ulasan Guru (Feedback)
-                </h3>
-                <p className="text-slate-800 text-sm bg-white p-3 rounded border border-slate-200 leading-relaxed">
-                  {evaluation.feedback}
-                </p>
+              <div className="flex flex-col gap-1">
+                <p className="text-xs font-semibold text-neutral-500 uppercase">Catatan & Ulasan Guru (Feedback)</p>
+                <div className="bg-white p-3 border border-neutral-200 rounded">
+                  <p className="text-sm text-neutral-700 leading-relaxed">{evaluation.feedback}</p>
+                </div>
               </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <h3 className="text-sm font-bold text-emerald-800 uppercase tracking-wide mb-2">
-                    ✅ Kelebihan Jawaban
-                  </h3>
-                  <ul className="space-y-1">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex flex-col gap-2">
+                  <p className="text-xs font-semibold text-green-700 uppercase">Kelebihan Jawaban</p>
+                  <div className="flex flex-col gap-1">
                     {evaluation.strengths.map((st, i) => (
-                      <li key={i} className="bg-white p-2.5 rounded border border-emerald-200 text-xs text-emerald-950 font-medium flex items-center gap-2">
-                        <span className="text-emerald-600 font-bold">✓</span>
-                        <span>{st}</span>
-                      </li>
+                      <div key={i} className="flex items-start gap-2 p-2.5 bg-white border border-neutral-200 rounded">
+                        <span className="text-xs text-green-600 font-bold">✓</span>
+                        <span className="text-xs text-neutral-700 font-medium">{st}</span>
+                      </div>
                     ))}
-                  </ul>
+                  </div>
                 </div>
-
-                <div>
-                  <h3 className="text-sm font-bold text-amber-800 uppercase tracking-wide mb-2">
-                    💡 Area Yang Perlu Ditingkatkan
-                  </h3>
-                  <ul className="space-y-1">
+                <div className="flex flex-col gap-2">
+                  <p className="text-xs font-semibold text-amber-700 uppercase">Area Yang Perlu Ditingkatkan</p>
+                  <div className="flex flex-col gap-1">
                     {evaluation.improvements.map((imp, i) => (
-                      <li key={i} className="bg-white p-2.5 rounded border border-amber-200 text-xs text-amber-950 font-medium flex items-center gap-2">
-                        <span className="text-amber-600 font-bold">•</span>
-                        <span>{imp}</span>
-                      </li>
+                      <div key={i} className="flex items-start gap-2 p-2.5 bg-white border border-neutral-200 rounded">
+                        <span className="text-xs text-amber-600 font-bold">•</span>
+                        <span className="text-xs text-neutral-700 font-medium">{imp}</span>
+                      </div>
                     ))}
-                  </ul>
+                  </div>
                 </div>
               </div>
-
-              <div>
-                <h3 className="text-sm font-bold text-purple-800 uppercase tracking-wide mb-1">
-                  ✏️ Rekomendasi Perbaikan Jawaban Ideal
-                </h3>
-                <div className="text-purple-950 text-sm bg-white p-3 rounded border border-purple-200 whitespace-pre-line leading-relaxed font-sans">
-                  {evaluation.suggestedCorrection}
+              <div className="flex flex-col gap-1">
+                <p className="text-xs font-semibold text-blue-600 uppercase">Rekomendasi Perbaikan Jawaban Ideal</p>
+                <div className="bg-white p-3 border border-neutral-200 rounded whitespace-pre-line">
+                  <p className="text-sm text-neutral-700 leading-relaxed">{evaluation.suggestedCorrection}</p>
                 </div>
               </div>
             </CardContent>

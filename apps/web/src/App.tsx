@@ -11,7 +11,6 @@ import { CreateQuizPage } from "./pages/CreateQuizPage";
 import { CreateMaterialPage } from "./pages/CreateMaterialPage";
 import { EssayGraderPage } from "./pages/EssayGraderPage";
 import { DocumentPage } from "./pages/DocumentPage";
-import { AssessmentPage } from "./pages/AssessmentPage";
 import { GradebookPage } from "./pages/GradebookPage";
 import { TakeQuizPage } from "./pages/TakeQuizPage";
 import { MonitorQuizPage } from "./pages/MonitorQuizPage";
@@ -27,10 +26,7 @@ export function App() {
   const [queryClient] = useState(() => new QueryClient());
   const [trpcClient] = useState(() => {
     const trpcUrl =
-      import.meta.env.VITE_TRPC_URL ||
-      (typeof window !== "undefined" && window.location.port === "3000"
-        ? `${window.location.protocol}//${window.location.hostname}:3002/trpc`
-        : "/trpc");
+      import.meta.env.VITE_TRPC_URL || "/trpc";
 
     return trpc.createClient({
       links: [
@@ -88,14 +84,6 @@ export function App() {
                 element={
                   <ProtectedRoute>
                     <DocumentPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/assessment"
-                element={
-                  <ProtectedRoute>
-                    <AssessmentPage />
                   </ProtectedRoute>
                 }
               />
