@@ -9,10 +9,12 @@ import { DashboardPage } from "./pages/DashboardPage";
 import { LandingPage } from "./pages/LandingPage";
 import { CreateQuizPage } from "./pages/CreateQuizPage";
 import { CreateMaterialPage } from "./pages/CreateMaterialPage";
+import { MaterialsPage } from "./pages/MaterialsPage";
 import { EssayGraderPage } from "./pages/EssayGraderPage";
 import { DocumentPage } from "./pages/DocumentPage";
 import { GradebookPage } from "./pages/GradebookPage";
 import { TakeQuizPage } from "./pages/TakeQuizPage";
+import { TakeMaterialPage } from "./pages/TakeMaterialPage";
 import { MonitorQuizPage } from "./pages/MonitorQuizPage";
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -48,6 +50,7 @@ export function App() {
               <Route path="/login" element={<LoginPage />} />
               <Route path="/quiz/:code" element={<TakeQuizPage />} />
               <Route path="/quiz" element={<TakeQuizPage />} />
+              <Route path="/materi" element={<TakeMaterialPage />} />
               <Route
                 path="/dashboard"
                 element={
@@ -69,6 +72,14 @@ export function App() {
                 element={
                   <ProtectedRoute>
                     <CreateMaterialPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/materials"
+                element={
+                  <ProtectedRoute>
+                    <MaterialsPage />
                   </ProtectedRoute>
                 }
               />

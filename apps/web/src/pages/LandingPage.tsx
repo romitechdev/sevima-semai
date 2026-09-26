@@ -11,11 +11,18 @@ export const LandingPage: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [code, setCode] = useState("");
+  const [materialCode, setMaterialCode] = useState("");
 
   const handleJoinQuiz = (e: React.FormEvent) => {
     e.preventDefault();
     if (!code) return;
     navigate(`/quiz/${code.trim().toUpperCase()}`);
+  };
+
+  const handleOpenMaterial = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!materialCode) return;
+    navigate(`/materi?code=${materialCode.trim().toUpperCase()}`);
   };
 
   return (
@@ -32,7 +39,7 @@ export const LandingPage: React.FC = () => {
           className="bg-neutral-900 hover:bg-neutral-800 text-white rounded-sm"
           onClick={() => navigate(user ? "/dashboard" : "/login")}
         >
-          {user ? "Dashboard Guru" : "Masuk Guru"}
+          {user ? "Dashboard Pengajar" : "Masuk Pengajar"}
         </Button>
       </header>
 
@@ -65,35 +72,66 @@ export const LandingPage: React.FC = () => {
 
         {/* Right Column: Portal Siswa */}
         <Card>
-          <CardContent className="pt-6 flex flex-col gap-4">
-            <div className="border-b border-neutral-200 pb-4">
-              <h2 className="text-sm font-medium text-neutral-950">Portal Siswa, Ikuti Kuis</h2>
-              <p className="text-xs text-neutral-400 mt-1">
-                Masukkan kode kuis 6 karakter dari guru untuk mulai mengerjakan.
-              </p>
+          <CardContent className="pt-6 flex flex-col gap-6">
+            <div>
+              <div className="border-b border-neutral-200 pb-3">
+                <h2 className="text-sm font-medium text-neutral-950">Ikuti Kuis Formatif</h2>
+                <p className="text-xs text-neutral-400 mt-1">
+                  Masukkan kode kuis 6 karakter dari pengajar.
+                </p>
+              </div>
+              <form onSubmit={handleJoinQuiz} className="flex flex-col gap-3 pt-3" aria-label="Form masuk kuis" noValidate>
+                <div className="flex flex-col gap-1">
+                  <Label htmlFor="quiz-code">Kode Kuis</Label>
+                  <Input
+                    id="quiz-code"
+                    className="font-mono text-center tracking-widest"
+                    placeholder="AB12CD"
+                    value={code}
+                    onChange={(e) => setCode(e.target.value.toUpperCase())}
+                    maxLength={6}
+                    required
+                    autoComplete="off"
+                    inputMode="text"
+                    enterKeyHint="go"
+                    style={{ fontSize: "1rem" }}
+                  />
+                </div>
+                <Button type="submit" className="w-full bg-neutral-900 hover:bg-neutral-800 text-white rounded-sm">
+                  Masuk Kuis
+                </Button>
+              </form>
             </div>
 
-            <form onSubmit={handleJoinQuiz} className="flex flex-col gap-4" aria-label="Form masuk kuis" noValidate>
-              <div className="flex flex-col gap-1">
-                <Label htmlFor="quiz-code">Kode Kuis (6 Karakter)</Label>
-                <Input
-                  id="quiz-code"
-                  className="font-mono text-center text-lg tracking-widest"
-                  placeholder="AB12CD"
-                  value={code}
-                  onChange={(e) => setCode(e.target.value.toUpperCase())}
-                  maxLength={6}
-                  required
-                  autoComplete="off"
-                  inputMode="text"
-                  enterKeyHint="go"
-                  style={{ fontSize: "1rem" }}
-                />
+            <div className="border-t border-neutral-200 pt-5">
+              <div className="border-b border-neutral-200 pb-3">
+                <h2 className="text-sm font-medium text-neutral-950">Baca Materi Belajar</h2>
+                <p className="text-xs text-neutral-400 mt-1">
+                  Masukkan kode materi untuk membuka bahan ajar dari pengajar.
+                </p>
               </div>
-              <Button type="submit" className="w-full bg-neutral-900 hover:bg-neutral-800 text-white rounded-sm">
-                Masuk Kuis
-              </Button>
-            </form>
+              <form onSubmit={handleOpenMaterial} className="flex flex-col gap-3 pt-3" aria-label="Form buka materi" noValidate>
+                <div className="flex flex-col gap-1">
+                  <Label htmlFor="material-code">Kode Materi</Label>
+                  <Input
+                    id="material-code"
+                    className="font-mono text-center tracking-widest"
+                    placeholder="FOTOSIN5"
+                    value={materialCode}
+                    onChange={(e) => setMaterialCode(e.target.value.toUpperCase())}
+                    maxLength={10}
+                    required
+                    autoComplete="off"
+                    inputMode="text"
+                    enterKeyHint="go"
+                    style={{ fontSize: "1rem" }}
+                  />
+                </div>
+                <Button type="submit" variant="outline" className="w-full rounded-sm">
+                  Buka Materi
+                </Button>
+              </form>
+            </div>
           </CardContent>
         </Card>
       </main>

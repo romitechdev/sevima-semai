@@ -134,4 +134,16 @@ export const gradebookRouter = router({
         });
       }
     }),
+
+  deleteGrade: publicProcedure
+    .input(z.object({ gradeId: z.string().uuid() }))
+    .mutation(async ({ input }) => {
+      const supabase = getSupabaseAdmin();
+
+      const { error } = await supabase.from("student_grades").delete().eq("id", input.gradeId);
+      if (error) {
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: `Gagal menghapus nilai: ${error.message}` });
+      }
+      return { deleted: true };
+    }),
 });

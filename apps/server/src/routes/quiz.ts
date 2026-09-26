@@ -329,4 +329,49 @@ export const quizRouter = router({
         });
       }
     }),
+
+  update: publicProcedure
+    .input(
+      z.object({
+        quizId: z.string().uuid(),
+        title: z.string().min(1).optional(),
+        subject: z.string().min(1).optional(),
+        gradeLevel: z.string().min(1).optional(),
+        code: z.string().min(4).max(10).optional(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const supabase = getSupabaseAdmin();
+      const { quizId, ...fields } = input;
+
+      const updates: Record<string, string> = {};
+      if (input.title !== undefined) updates.title = input.title;
+      if (input.subject !== undefined) updates.subject = input.subject;
+      if (input.gradeLevel !== undefined) updates.grade_level = input.gradeLevel;
+      if (input.code !== undefined) updates.code = input.code.toUpperCase();
+
+      const { data: quiz, error } = await supabase
+        .from("quizzes")
+        .update(updates)
+        .eq("id", quizId)
+        .select()
+        .single();
+
+      if (error || !quiz) {
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: `Gagal mengupdate kuis: ${error?.message}` });
+      }
+      return quiz;
+    }),
+
+  delete: publicProcedure
+    .input(z.object({ quizId: z.string().uuid() }))
+    .mutation(async ({ input }) => {
+      const supabase = getSupabaseAdmin();
+
+      const { error } = await supabase.from("quizzes").delete().eq("id", input.quizId);
+      if (error) {
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: `Gagal menghapus kuis: ${error.message}` });
+      }
+      return { deleted: true };
+    }),
 });

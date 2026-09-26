@@ -70,7 +70,7 @@ export const LoginPage: React.FC = () => {
                 <Wordmark />
               </span>
               <h1 className="text-xl font-medium text-neutral-950 text-center tracking-tight">
-                {isRegister ? "Registrasi Tenaga Pendidik" : "Masuk Portal Guru"}
+                {isRegister ? "Registrasi Tenaga Pengajar" : "Masuk Platform Pengajar"}
               </h1>
               <p className="text-xs text-neutral-400 text-center">Semai, Menyemai generasi, mengefisiensi profesi.</p>
             </div>
@@ -94,7 +94,7 @@ export const LoginPage: React.FC = () => {
             <form onSubmit={handleSubmit} className="flex flex-col gap-4" noValidate>
               {isRegister && (
                 <div className="flex flex-col gap-1">
-                  <Label htmlFor="register-name">Nama Lengkap Guru</Label>
+                  <Label htmlFor="register-name">Nama Lengkap Pengajar</Label>
                   <Input
                     id="register-name"
                     placeholder="Contoh: Rina S.Pd"
@@ -136,7 +136,7 @@ export const LoginPage: React.FC = () => {
                 />
               </div>
               <Button type="submit" className="w-full bg-neutral-900 hover:bg-neutral-800 text-white rounded-sm" disabled={loading}>
-                {loading ? "Memproses..." : isRegister ? "Daftar Akun Guru" : "Masuk Dashboard"}
+                {loading ? "Memproses..." : isRegister ? "Daftar Akun Pengajar" : "Masuk Dashboard"}
               </Button>
             </form>
 

@@ -12,7 +12,8 @@ interface DashboardLayoutProps {
 const menuItems = [
   { label: "Ringkasan", path: "/dashboard" },
   { label: "Kuis Formatif", path: "/create" },
-  { label: "Materi Ajar AI", path: "/material" },
+  { label: "Generator Materi", path: "/material" },
+  { label: "Materi Siswa", path: "/materials" },
   { label: "Koreksi Esai AI", path: "/essay" },
   { label: "Arsip Dokumentasi", path: "/documents" },
   { label: "Gradebook & Rapor", path: "/gradebook" },
@@ -134,7 +135,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
           </nav>
 
           <p className="text-xs text-neutral-400 px-3 py-3 border-t border-neutral-100 whitespace-nowrap min-w-[13rem]" aria-hidden="true">
-            Semai, Sistem Pembelajaran Terpadu
+            Semai, Platform Pengajar
           </p>
         </aside>
 

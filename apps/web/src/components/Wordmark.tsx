@@ -12,7 +12,7 @@ export const Wordmark: React.FC<WordmarkProps> = ({ className, taglineClassName 
       Semai
     </span>
     <span className={cn("text-[0.6em] font-medium tracking-[0.14em] uppercase text-neutral-400", taglineClassName)} aria-hidden="true">
-      Portal Guru
+      Pengajar
     </span>
   </span>
 );

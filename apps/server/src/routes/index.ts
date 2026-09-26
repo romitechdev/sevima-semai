@@ -14,8 +14,7 @@ export const appRouter = router({
   health: healthRouter,
   quiz: quizRouter,
   material: materialRouter,
-  essay: essayRouter,
-  document: documentRouter,
+  essay: essayRouter,  document: documentRouter,
   agent: agentRouter,
   gradebook: gradebookRouter,
 });
