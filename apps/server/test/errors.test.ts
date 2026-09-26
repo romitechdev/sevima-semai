@@ -62,7 +62,7 @@ describe("error handling branches", () => {
   it("material.generate throws on LLM error", async () => {
     (llm.generateMaterialWithLLM as any).mockRejectedValue(new Error("LLM failed"));
     const caller = appRouter.createCaller({} as any);
-    await expect(caller.material.generate({ topic: "Photosynthesis" })).rejects.toThrow("Gagal menyusun materi pembelajaran: LLM failed");
+    await expect(caller.material.generate({ teacherId, topic: "Photosynthesis" })).rejects.toThrow("Gagal menyusun materi pembelajaran: LLM failed");
   });
 
   it("essay.evaluate throws on LLM error", async () => {

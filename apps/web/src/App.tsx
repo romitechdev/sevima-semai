@@ -7,6 +7,7 @@ import { AuthProvider, useAuth } from "./context/AuthContext";
 import { LoginPage } from "./pages/LoginPage";
 import { DashboardPage } from "./pages/DashboardPage";
 import { LandingPage } from "./pages/LandingPage";
+import { AboutPage } from "./pages/AboutPage";
 import { CreateQuizPage } from "./pages/CreateQuizPage";
 import { CreateMaterialPage } from "./pages/CreateMaterialPage";
 import { MaterialsPage } from "./pages/MaterialsPage";
@@ -47,6 +48,7 @@ export function App() {
             <a href="#main-content" className="skip-link">Lewati ke konten utama</a>
             <Routes>
               <Route path="/" element={<LandingPage />} />
+              <Route path="/tentang" element={<AboutPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/quiz/:code" element={<TakeQuizPage />} />
               <Route path="/quiz" element={<TakeQuizPage />} />

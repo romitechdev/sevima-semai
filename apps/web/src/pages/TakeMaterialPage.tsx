@@ -1,100 +1,98 @@
 import React, { useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
 import { trpc } from "../lib/trpc";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Label } from "@/components/ui/label";
-import { Wordmark } from "../components/Wordmark";
+import { Skeleton } from "@/components/ui/skeleton";
+import { PublicHeader } from "../components/PublicHeader";
 import { MaterialDialog } from "../components/MaterialDialog";
 
 export const TakeMaterialPage: React.FC = () => {
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const [inputCode, setInputCode] = useState(searchParams.get("code") || "");
-  const [studentName, setStudentName] = useState("");
-  const [material, setMaterial] = useState<any | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [selected, setSelected] = useState<any | null>(null);
 
-  const materialQuery = trpc.material.getByCode.useQuery(
-    { code: inputCode },
-    { enabled: false }
-  );
-
-  const handleOpen = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-    if (!inputCode || !studentName) {
-      setError("Silakan isi kode materi dan nama kamu.");
-      return;
-    }
-    const res = await materialQuery.refetch();
-    if (res.isError || !res.data) {
-      setError("Materi tidak ditemukan dengan kode tersebut.");
-      return;
-    }
-    setMaterial(res.data);
-  };
-
-  if (material) {
-    return (
-      <main id="main-content" className="min-dvh bg-neutral-50 flex items-center justify-center p-4">
-        <MaterialDialog material={material} open onOpenChange={(o) => !o && navigate("/")} />
-      </main>
-    );
-  }
+  const { data: materials, isLoading } = trpc.material.listShared.useQuery();
 
   return (
-    <main id="main-content" className="min-dvh bg-neutral-50 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
-        <CardContent className="pt-6 flex flex-col gap-4">
-          <div className="flex flex-col items-center gap-1">
-            <span className="text-2xl">
-              <Wordmark />
-            </span>
-            <h1 className="text-lg font-medium text-neutral-950">Buka Materi Belajar</h1>
-            <p className="text-xs text-neutral-400 text-center">
-              Masukkan kode materi dari pengajar untuk mulai membaca.
+    <div className="min-dvh bg-neutral-50 flex flex-col">
+      <PublicHeader active="/materi" showLogin={false} />
+      <main id="main-content" className="flex-1 p-4">
+        <div className="max-w-3xl mx-auto flex flex-col gap-6">
+          <div>
+            <h1 className="text-xl font-medium tracking-tight text-neutral-950">Materi Belajar</h1>
+            <p className="text-sm text-neutral-500 mt-1">
+              Kumpulan bahan ajar yang dibagikan pengajar. Klik judul untuk membaca.
             </p>
           </div>
-          <form onSubmit={handleOpen} className="flex flex-col gap-4" noValidate>
-            {error && <Alert variant="destructive" role="alert"><AlertDescription>{error}</AlertDescription></Alert>}
-            <div className="flex flex-col gap-1">
-              <Label htmlFor="material-code">Kode Materi</Label>
-              <Input
-                id="material-code"
-                className="font-mono text-center"
-                placeholder="Contoh: FOTOSIN5"
-                value={inputCode}
-                onChange={(e) => setInputCode(e.target.value.toUpperCase())}
-                maxLength={10}
-                required
-                autoComplete="off"
-                inputMode="text"
-                enterKeyHint="next"
-                style={{ fontSize: "1rem" }}
-              />
+
+          {isLoading ? (
+            <div className="flex flex-col gap-3">
+              <Skeleton className="w-full h-20" />
+              <Skeleton className="w-full h-20" />
+              <Skeleton className="w-full h-20" />
             </div>
-            <div className="flex flex-col gap-1">
-              <Label htmlFor="material-name">Nama Lengkap Siswa</Label>
-              <Input
-                id="material-name"
-                placeholder="Ketik nama lengkapmu"
-                value={studentName}
-                onChange={(e) => setStudentName(e.target.value)}
-                required
-                autoComplete="name"
-                enterKeyHint="go"
-                style={{ fontSize: "1rem" }}
-              />
+          ) : !materials || materials.length === 0 ? (
+            <div className="text-center py-16 border border-dashed border-neutral-300">
+              <p className="text-sm font-medium text-neutral-700">Belum ada materi dibagikan</p>
+              <p className="text-sm text-neutral-500 max-w-sm mx-auto mt-1">
+                Cek kembali nanti. Materi baru akan muncul di sini saat pengajar membagikannya.
+              </p>
+              <Button size="sm" variant="outline" className="rounded-sm mt-4" onClick={() => (window.location.href = "/")}>
+                Kembali ke Beranda
+              </Button>
             </div>
-            <Button type="submit" className="w-full bg-neutral-900 hover:bg-neutral-800 text-white rounded-sm">
-              Buka Materi
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
-    </main>
+          ) : (
+            <div className="flex flex-col gap-3">
+              {materials.map((m: any) => (
+                <Card key={m.id}>
+                  <CardContent className="pt-4">
+                    <button
+                      onClick={() => setSelected(m)}
+                      className="w-full text-left flex items-center gap-4 group"
+                      aria-label={`Baca materi ${m.title}`}
+                    >
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-neutral-950 truncate group-hover:underline underline-offset-2">
+                          {m.title}
+                        </p>
+                        <p className="text-xs text-neutral-400 mt-1">
+                          {m.subject} · {m.grade_level} ·{" "}
+                          {new Date(m.created_at).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}
+                        </p>
+                      </div>
+                      <span className="text-xs text-neutral-400 flex-shrink-0">Baca →</span>
+                    </button>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+        </div>
+      </main>
+
+      {selected && (
+        <MaterialDetail materialId={selected.id} open onOpenChange={(o) => !o && setSelected(null)} />
+      )}
+    </div>
   );
+};
+
+const MaterialDetail: React.FC<{
+  materialId: string;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}> = ({ materialId, open, onOpenChange }) => {
+  const { data: material, isLoading } = trpc.material.getById.useQuery(
+    { materialId },
+    { enabled: open }
+  );
+
+  if (isLoading || !material) {
+    return (
+      <MaterialDialog
+        material={{ id: materialId, title: "Memuat...", subject: "", grade_level: "", content: {}, created_at: new Date().toISOString() }}
+        open={open}
+        onOpenChange={onOpenChange}
+      />
+    );
+  }
+  return <MaterialDialog material={material} open={open} onOpenChange={onOpenChange} />;
 };

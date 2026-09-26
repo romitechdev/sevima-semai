@@ -1,19 +1,18 @@
--- materials table for generated student materials
+-- materials table for generated student materials (auto-shared, no access code)
 create table if not exists public.materials (
   id uuid primary key default gen_random_uuid(),
   teacher_id uuid not null references public.profiles(id) on delete cascade,
   title text not null,
   subject text not null,
   grade_level text not null,
-  access_code text not null unique,
   content jsonb not null default '{}'::jsonb,
   created_at timestamptz not null default now()
 );
 
 alter table public.materials enable row level security;
-create policy "materials_select_own" on public.materials for select using (true);
+create policy "materials_select_all" on public.materials for select using (true);
 create policy "materials_insert" on public.materials for insert with check (true);
-create policy "materials_delete_own" on public.materials for delete using (true);
+create policy "materials_delete" on public.materials for delete using (true);
 
 -- cascade answers, questions, student_grades when a quiz is deleted
 do $$

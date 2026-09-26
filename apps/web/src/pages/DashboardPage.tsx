@@ -105,7 +105,7 @@ export const DashboardPage: React.FC = () => {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-neutral-200 border border-neutral-200 overflow-hidden">
           {[
             { label: "Kuis Formatif", value: totalQuizzes, desc: "kuis terdaftar", link: "/create" },
-            { label: "Materi Tersimpan", value: totalMaterials, desc: "bisa dibuka siswa", link: "/materials" },
+            { label: "Materi Tersimpan", value: totalMaterials, desc: "bisa dibaca siswa", link: "/materials" },
             { label: "Siswa Terdaftar", value: totalStudentsCount, desc: "dalam gradebook", link: "/gradebook" },
             { label: "Rekap Nilai", value: totalGradesCount, desc: "nilai tersimpan", link: "/gradebook" },
           ].map((m) => (
@@ -116,6 +116,39 @@ export const DashboardPage: React.FC = () => {
             </a>
           ))}
         </div>
+
+        {/* Share link box for materials */}
+        {totalMaterials > 0 && (
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 px-4 py-3 bg-neutral-50 border border-neutral-200">
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-medium text-neutral-950">
+                {totalMaterials} materi aktif tersedia untuk siswa
+              </p>
+              <p className="text-xs text-neutral-500 mt-0.5 font-mono truncate">
+                {window.location.origin}/materi
+              </p>
+            </div>
+            <div className="flex gap-2 flex-shrink-0">
+              <Button
+                size="sm"
+                variant="outline"
+                className="rounded-sm text-xs"
+                onClick={() => {
+                  navigator.clipboard.writeText(`${window.location.origin}/materi`);
+                }}
+              >
+                Salin Link
+              </Button>
+              <Button
+                size="sm"
+                className="bg-neutral-900 hover:bg-neutral-800 text-white rounded-sm text-xs"
+                onClick={() => window.open(`${window.location.origin}/materi`, "_blank")}
+              >
+                Buka Halaman Siswa
+              </Button>
+            </div>
+          </div>
+        )}
 
         <Card>
           <CardContent className="pt-5 flex flex-col gap-4">

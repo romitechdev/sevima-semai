@@ -9,26 +9,16 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
-import {
-  Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
-} from "@/components/ui/dialog";
 
 export const CreateMaterialPage: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [topic, setTopic] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [accessCode, setAccessCode] = useState("");
-  const [saveOpen, setSaveOpen] = useState(false);
-  const [saveMsg, setSaveMsg] = useState<string | null>(null);
-
-  const [generatedMaterial, setGeneratedMaterial] = useState<{
-    title: string; subject: string; gradeLevel: string; summary: string;
-    keyPoints: string[]; explanation: string; interactiveActivity: string;
-  } | null>(null);
+  const [saved, setSaved] = useState<any | null>(null);
+  const [copied, setCopied] = useState(false);
 
   const generateMutation = trpc.material.generate.useMutation();
-  const saveMutation = trpc.material.save.useMutation();
   const { refetch: refetchList } = trpc.material.listByTeacher.useQuery(
     { teacherId: user?.id || "" },
     { enabled: !!user }
@@ -36,43 +26,32 @@ export const CreateMaterialPage: React.FC = () => {
 
   const handleGenerate = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!user) return;
     setError(null);
-    if (!topic || topic.trim().length < 3) { setError("Masukkan topik materi minimal 3 karakter"); return; }
+    setSaved(null);
+    if (!topic || topic.trim().length < 3) {
+      setError("Masukkan topik materi minimal 3 karakter");
+      return;
+    }
     try {
-      const res = await generateMutation.mutateAsync({ topic });
-      setGeneratedMaterial(res);
-    } catch (err: any) { setError(err.message || "Gagal membuat materi pembelajaran"); }
-  };
-
-  const handleCreateQuizFromMaterial = () => {
-    if (!generatedMaterial) return;
-    const promptText = `Judul: ${generatedMaterial.title}\nMata Pelajaran: ${generatedMaterial.subject}\nTingkat: ${generatedMaterial.gradeLevel}\nRingkasan: ${generatedMaterial.summary}\nPoin Utama: ${generatedMaterial.keyPoints.join(", ")}`;
-    navigate("/create", { state: { initialPrompt: promptText } });
-  };
-
-  const handleSaveMaterial = async () => {
-    if (!user || !generatedMaterial) return;
-    setSaveMsg(null);
-    try {
-      const res = await saveMutation.mutateAsync({
-        teacherId: user.id,
-        title: generatedMaterial.title,
-        subject: generatedMaterial.subject,
-        gradeLevel: generatedMaterial.gradeLevel,
-        summary: generatedMaterial.summary,
-        keyPoints: generatedMaterial.keyPoints,
-        explanation: generatedMaterial.explanation,
-        interactiveActivity: generatedMaterial.interactiveActivity,
-        accessCode: accessCode || undefined,
-      });
-      setSaveOpen(false);
-      setAccessCode("");
-      setSaveMsg(`Tersimpan. Kode akses: ${(res as any).access_code}`);
+      const result = await generateMutation.mutateAsync({ teacherId: user.id, topic });
+      setSaved(result);
       refetchList();
+      setTopic("");
     } catch (err: any) {
-      setSaveMsg(err.message || "Gagal menyimpan materi");
+      setError(err.message || "Gagal membuat materi pembelajaran");
     }
   };
+
+  const materiUrl = `${window.location.origin}/materi`;
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(materiUrl).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+
+  const c = saved?.content || {};
 
   return (
     <DashboardLayout>
@@ -83,124 +62,168 @@ export const CreateMaterialPage: React.FC = () => {
             <div className="flex items-center justify-between flex-wrap gap-4">
               <div>
                 <h1 className="text-xl font-medium text-neutral-950 tracking-tight">AI Generator Materi Ajar</h1>
-                <p className="text-xs text-neutral-400 mt-1">Semai · Menyusun Materi & Rencana Kelas Instan</p>
+                <p className="text-xs text-neutral-400 mt-1">
+                  Materi tersimpan otomatis dan langsung bisa dibaca siswa di halaman Materi.
+                </p>
               </div>
-              <div className="flex gap-2 flex-wrap">
-                <Button variant="outline" size="sm" className="rounded-sm" onClick={() => navigate("/dashboard")}>Batal</Button>
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" className="rounded-sm" onClick={() => navigate("/materials")}>
+                  Arsip Materi
+                </Button>
+                <Button variant="outline" size="sm" className="rounded-sm" onClick={() => navigate("/dashboard")}>
+                  Dashboard
+                </Button>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        {saveMsg && (
-          <Alert variant="default"><AlertDescription>{saveMsg}</AlertDescription></Alert>
-        )}
         {error && <Alert variant="destructive"><AlertDescription>{error}</AlertDescription></Alert>}
 
-        {/* Generator Form */}
+        {/* Form generate */}
         <Card>
           <CardContent className="pt-5 flex flex-col gap-4">
-            <h3 className="text-base font-medium text-neutral-950">Buat Bahan Ajar Otomatis</h3>
-            <form onSubmit={handleGenerate} className="flex flex-col gap-4">
+            <p className="text-xs uppercase tracking-wider text-neutral-400 select-none">Buat Bahan Ajar Baru</p>
+            <form onSubmit={handleGenerate} className="flex flex-col gap-4" noValidate>
               <div className="flex flex-col gap-1">
-                <Label>Topik atau Pokok Bahasan</Label>
+                <Label htmlFor="material-topic">Topik atau Pokok Bahasan</Label>
                 <Input
+                  id="material-topic"
                   placeholder="Contoh: Fotosintesis & Peran Cahaya Matahari untuk Kelas 5 SD"
                   value={topic}
                   onChange={(e) => setTopic(e.target.value)}
                   required
+                  style={{ fontSize: "1rem" }}
                 />
               </div>
-              <Button type="submit" className="w-full bg-neutral-900 hover:bg-neutral-800 text-white" disabled={generateMutation.isPending}>
-                {generateMutation.isPending ? "AI Sedang Menyusun Materi..." : "Susun Materi Pembelajaran"}
+              <Button
+                type="submit"
+                className="w-full bg-neutral-900 hover:bg-neutral-800 text-white rounded-sm"
+                disabled={generateMutation.isPending}
+              >
+                {generateMutation.isPending ? "AI Sedang Menyusun Materi..." : "Susun & Simpan Materi"}
               </Button>
             </form>
           </CardContent>
         </Card>
 
-        {/* Generated Material */}
-        {generatedMaterial && (
-          <Card>
-            <CardContent className="pt-5 flex flex-col gap-4">
-            <div className="flex items-center justify-between flex-wrap gap-2 border-b border-neutral-200 pb-4">
+        {/* Hasil generate + sharing */}
+        {saved && (
+          <Card className="border-neutral-900">
+            <CardContent className="pt-5 flex flex-col gap-5">
+              {/* Status */}
+              <div className="flex items-start justify-between gap-4 flex-wrap">
                 <div>
-                  <Badge variant="secondary">{generatedMaterial.subject} · {generatedMaterial.gradeLevel}</Badge>
-                  <h2 className="text-xl font-medium text-neutral-950 mt-2 tracking-tight">{generatedMaterial.title}</h2>
+                  <p className="text-xs uppercase tracking-wider text-neutral-400 select-none">Materi Berhasil Dibuat</p>
+                  <h2 className="text-lg font-medium text-neutral-950 mt-1 tracking-tight">{saved.title}</h2>
+                  <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+                    <Badge variant="secondary">{saved.subject}</Badge>
+                    <Badge variant="secondary">{saved.grade_level}</Badge>
+                    <span className="text-xs text-neutral-400">
+                      {new Date(saved.created_at).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}
+                    </span>
+                  </div>
                 </div>
-                <div className="flex gap-2">
-                  <Button size="sm" className="bg-neutral-900 hover:bg-neutral-800 text-white rounded-sm" onClick={() => setSaveOpen(true)}>
-                    Simpan untuk Siswa
-                  </Button>
-                  <Button size="sm" variant="outline" className="rounded-sm" onClick={handleCreateQuizFromMaterial}>
-                    Buat Kuis Dari Ini
-                  </Button>
-                </div>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="rounded-sm flex-shrink-0"
+                  onClick={() => navigate("/materials")}
+                >
+                  Lihat Arsip →
+                </Button>
               </div>
 
-              <div className="flex flex-col gap-1">
-                <p className="text-xs font-medium text-neutral-500 uppercase">Ringkasan Singkat</p>
-                <div className="bg-neutral-50 p-3 border border-neutral-200 rounded-sm">
-                  <p className="text-sm text-neutral-700 leading-relaxed">{generatedMaterial.summary}</p>
-                </div>
-              </div>
-
+              {/* Share link box */}
               <div className="flex flex-col gap-2">
-                <p className="text-xs font-medium text-neutral-500 uppercase">Poin-Poin Kunci (Key Takeaways)</p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  {generatedMaterial.keyPoints.map((pt, i) => (
-                    <div key={i} className="flex items-start gap-2 p-3 bg-white border border-neutral-200 rounded-sm">
-                      <span className="text-xs text-neutral-900 font-bold">•</span>
-                      <span className="text-xs text-neutral-700 font-medium">{pt}</span>
+                <p className="text-xs uppercase tracking-wider text-neutral-400 select-none">Bagikan ke Siswa</p>
+                <p className="text-xs text-neutral-500">
+                  Materi ini sudah otomatis muncul di halaman Materi. Bagikan link berikut ke siswa:
+                </p>
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                  <div className="flex-1 px-3 py-2 bg-neutral-50 border border-neutral-200 rounded-sm font-mono text-sm text-neutral-700 truncate select-all">
+                    {materiUrl}
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="rounded-sm flex-shrink-0"
+                    onClick={handleCopyLink}
+                  >
+                    {copied ? "✓ Tersalin" : "Salin Link"}
+                  </Button>
+                  <Button
+                    size="sm"
+                    className="bg-neutral-900 hover:bg-neutral-800 text-white rounded-sm flex-shrink-0"
+                    onClick={() => window.open(materiUrl, "_blank")}
+                  >
+                    Buka Halaman Materi
+                  </Button>
+                </div>
+                <p className="text-xs text-neutral-400">
+                  Siswa bisa langsung membaca tanpa login. Materi juga tampil di beranda portal siswa.
+                </p>
+              </div>
+
+              {/* Preview konten */}
+              <div className="flex flex-col gap-4 border-t border-neutral-100 pt-4">
+                <p className="text-xs uppercase tracking-wider text-neutral-400 select-none">Pratinjau Materi</p>
+
+                {c.summary && (
+                  <div className="flex flex-col gap-1">
+                    <p className="text-xs font-medium text-neutral-600">Ringkasan</p>
+                    <p className="text-sm text-neutral-700 leading-relaxed">{c.summary}</p>
+                  </div>
+                )}
+
+                {c.keyPoints && c.keyPoints.length > 0 && (
+                  <div className="flex flex-col gap-1.5">
+                    <p className="text-xs font-medium text-neutral-600">Poin Utama</p>
+                    <ul className="flex flex-col gap-1 list-none p-0 m-0">
+                      {c.keyPoints.map((pt: string, i: number) => (
+                        <li key={i} className="flex items-start gap-2 text-sm text-neutral-700">
+                          <span className="text-neutral-400 flex-shrink-0 mt-0.5">•</span>
+                          <span>{pt}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {c.interactiveActivity && (
+                  <div className="flex flex-col gap-1">
+                    <p className="text-xs font-medium text-neutral-600">Ide Aktivitas Kelas</p>
+                    <div className="bg-neutral-50 border border-neutral-200 rounded-sm p-3">
+                      <p className="text-sm text-neutral-700">{c.interactiveActivity}</p>
                     </div>
-                  ))}
-                </div>
+                  </div>
+                )}
               </div>
 
-              <div className="flex flex-col gap-1">
-                <p className="text-xs font-medium text-neutral-500 uppercase">Penjelasan Materi Lengkap</p>
-                <div className="bg-white p-4 border border-neutral-200 rounded-sm whitespace-pre-line">
-                  <p className="text-sm text-neutral-700 leading-relaxed">{generatedMaterial.explanation}</p>
+              {/* CTA buat kuis dari materi ini */}
+              <div className="border-t border-neutral-100 pt-4 flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-neutral-950">Buat Kuis dari Materi Ini?</p>
+                  <p className="text-xs text-neutral-500 mt-0.5">Generate soal pilihan ganda otomatis berdasarkan konten materi ini.</p>
                 </div>
-              </div>
-
-              <div className="flex flex-col gap-1">
-                <p className="text-xs text-neutral-950 uppercase">Ide Aktivitas Interaktif 5 Menit di Kelas</p>
-                <div className="bg-neutral-100 p-3 border border-neutral-200 rounded-sm">
-                  <p className="text-sm text-neutral-700">{generatedMaterial.interactiveActivity}</p>
-                </div>
+                <Button
+                  size="sm"
+                  className="bg-neutral-900 hover:bg-neutral-800 text-white rounded-sm flex-shrink-0"
+                  onClick={() =>
+                    navigate("/create", {
+                      state: {
+                        initialPrompt: `Judul: ${saved.title}\nMata Pelajaran: ${saved.subject}\nTingkat: ${saved.grade_level}\nRingkasan: ${c.summary || ""}\nPoin Utama: ${(c.keyPoints || []).join(", ")}`,
+                      },
+                    })
+                  }
+                >
+                  Buat Kuis Formatif
+                </Button>
               </div>
             </CardContent>
           </Card>
         )}
       </div>
-
-      {/* Save material modal */}
-      <Dialog open={saveOpen} onOpenChange={setSaveOpen}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>Simpan Materi untuk Siswa</DialogTitle>
-            <DialogDescription>
-              Materi tersimpan di arsip dan bisa dibuka siswa lewat kode akses. Kode boleh diisi sendiri (min. 4 karakter) atau dibuat otomatis.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex flex-col gap-1">
-            <Label>Kode Akses (opsional)</Label>
-            <Input
-              value={accessCode}
-              onChange={(e) => setAccessCode(e.target.value.toUpperCase())}
-              placeholder="Contoh: FOTOSIN5"
-              maxLength={10}
-              style={{ fontSize: "1rem" }}
-            />
-          </div>
-          <DialogFooter>
-            <Button variant="outline" size="sm" className="rounded-sm" onClick={() => setSaveOpen(false)}>Batal</Button>
-            <Button size="sm" className="bg-neutral-900 hover:bg-neutral-800 text-white rounded-sm" onClick={handleSaveMaterial} disabled={saveMutation.isPending}>
-              {saveMutation.isPending ? "Menyimpan..." : "Simpan Materi"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </DashboardLayout>
   );
 };

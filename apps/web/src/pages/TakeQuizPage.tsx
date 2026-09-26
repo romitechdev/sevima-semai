@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Label } from "@/components/ui/label";
 import { Wordmark } from "@/components/Wordmark";
+import { PublicHeader } from "../components/PublicHeader";
 
 export const TakeQuizPage: React.FC = () => {
   const { code: urlCode } = useParams<{ code?: string }>();
@@ -54,7 +55,9 @@ export const TakeQuizPage: React.FC = () => {
 
   if (submittedResult) {
     return (
-      <div className="min-dvh bg-neutral-50 flex items-center justify-center p-4">
+      <div className="min-dvh bg-neutral-50 flex flex-col">
+        <PublicHeader active="/quiz" showLogin={false} />
+        <main id="main-content" className="flex-1 flex items-center justify-center p-4">
         <Card className="w-full max-w-md" role="status">
           <CardContent className="pt-6 flex flex-col items-center gap-4 text-center">
             <h2 className="text-3xl font-medium text-neutral-950">Jawaban Terkirim!</h2>
@@ -73,13 +76,16 @@ export const TakeQuizPage: React.FC = () => {
             </Button>
           </CardContent>
         </Card>
+        </main>
       </div>
     );
   }
 
   if (!quizStarted || !quizData) {
     return (
-      <main id="main-content" className="min-dvh bg-neutral-50 flex items-center justify-center p-4">
+      <div className="min-dvh bg-neutral-50 flex flex-col">
+        <PublicHeader active="/quiz" showLogin={false} />
+        <main id="main-content" className="flex-1 flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
           <CardContent className="pt-6 flex flex-col gap-4">
             <div className="flex flex-col items-center gap-1">
@@ -125,12 +131,15 @@ export const TakeQuizPage: React.FC = () => {
             </form>
           </CardContent>
         </Card>
-      </main>
+        </main>
+      </div>
     );
   }
 
   return (
-    <main id="main-content" className="min-dvh bg-neutral-50 p-4">
+    <div className="min-dvh bg-neutral-50 flex flex-col">
+      <PublicHeader active="/quiz" showLogin={false} />
+      <main id="main-content" className="flex-1 p-4">
       <div className="max-w-2xl mx-auto flex flex-col gap-6">
         {/* Quiz Header */}
         <div className="bg-neutral-900 rounded-sm p-6">
@@ -189,6 +198,7 @@ export const TakeQuizPage: React.FC = () => {
           </Button>
         </form>
       </div>
-    </main>
+      </main>
+    </div>
   );
 };

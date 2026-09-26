@@ -15,8 +15,12 @@ vi.mock("../src/lib/supabase.js", () => {
 vi.mock("../src/lib/llm.js", () => ({
   generateMaterialWithLLM: vi.fn().mockResolvedValue({
     title: "Materi: Photosynthesis",
-    content: "Photosynthesis is the process...",
-    objectives: ["Understand photosynthesis"],
+    subject: "IPA",
+    gradeLevel: "Kelas 5",
+    summary: "Ringkasan fotosintesis",
+    keyPoints: ["Cahaya diperlukan"],
+    explanation: "Photosynthesis is the process...",
+    interactiveActivity: "Amati tanaman",
   }),
   evaluateEssayWithLLM: vi.fn().mockResolvedValue({
     score: 85,
@@ -69,10 +73,16 @@ describe("materialRouter", () => {
   });
 
   it("generate returns AI-generated material", async () => {
+    mockFromSequence(
+      createMockChain({ single: { data: { id: teacherId }, error: null } }),
+      createMockChain({
+        single: (async () => ({ data: { id: "mat1", title: "Materi: Photosynthesis", subject: "IPA", grade_level: "Kelas 5", content: { summary: "Ringkasan fotosintesis", keyPoints: ["Cahaya diperlukan"], explanation: "Photosynthesis is the process...", interactiveActivity: "Amati tanaman" }, teacher_id: teacherId, created_at: new Date().toISOString() }, error: null }))
+      })
+    );
     const caller = appRouter.createCaller({} as any);
-    const res = await caller.material.generate({ topic: "Photosynthesis" });
-    expect(res.title).toBe("Materi: Photosynthesis");
-    expect(res.content).toContain("Photosynthesis");
+    const res = await caller.material.generate({ teacherId, topic: "Photosynthesis" });
+    expect(res.id).toBe("mat1");
+    expect(res.content.explanation).toContain("Photosynthesis is the process...");
   });
 });
 

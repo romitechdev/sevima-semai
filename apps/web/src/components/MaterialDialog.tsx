@@ -11,7 +11,6 @@ interface Material {
   title: string;
   subject: string;
   grade_level: string;
-  access_code: string;
   content: {
     summary?: string;
     keyPoints?: string[];
@@ -28,14 +27,6 @@ export const MaterialDialog: React.FC<{
 }> = ({ material, open, onOpenChange }) => {
   const [showFull, setShowFull] = useState(false);
 
-  const copyCode = async () => {
-    try {
-      await navigator.clipboard.writeText(material.access_code);
-    } catch {
-      /* clipboard not available */
-    }
-  };
-
   const c = material.content || {};
 
   return (
@@ -48,15 +39,7 @@ export const MaterialDialog: React.FC<{
           </div>
           <DialogTitle>{material.title}</DialogTitle>
           <DialogDescription>
-            Dibagikan oleh pengajar · Kode akses{" "}
-            <button
-              onClick={copyCode}
-              className="font-mono text-neutral-950 underline underline-offset-2 hover:no-underline"
-              aria-label="Salin kode akses"
-            >
-              {material.access_code}
-            </button>{" "}
-            untuk membuka materi ini.
+            Dibagikan oleh pengajar · {new Date(material.created_at).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}
           </DialogDescription>
         </DialogHeader>
 
