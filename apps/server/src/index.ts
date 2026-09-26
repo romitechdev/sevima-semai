@@ -21,6 +21,10 @@ const httpServer = createServer(async (req, res) => {
 
   const url = new URL(req.url ?? "/", `http://${req.headers.host ?? "localhost"}`);
 
+  if (url.pathname.startsWith("/ws")) {
+    return;
+  }
+
   if (!url.pathname.startsWith("/trpc")) {
     res.writeHead(404, { "Content-Type": "application/json" });
     res.end(JSON.stringify({ error: "Not found" }));
