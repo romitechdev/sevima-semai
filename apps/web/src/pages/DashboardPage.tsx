@@ -67,6 +67,9 @@ export const DashboardPage: React.FC = () => {
             <Button className="bg-purple-600 hover:bg-purple-700 text-xs md:text-sm" onClick={() => navigate("/material")}>
               📚 Materi AI
             </Button>
+            <Button className="bg-teal-600 hover:bg-teal-700 text-xs md:text-sm" onClick={() => navigate("/assessment")}>
+              📊 Penilaian Khusus
+            </Button>
             <Button className="bg-blue-600 hover:bg-blue-700 text-xs md:text-sm" onClick={() => navigate("/essay")}>
               ✍️ Koreksi Esai
             </Button>

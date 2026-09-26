@@ -10,6 +10,7 @@ import { CreateQuizPage } from "./pages/CreateQuizPage";
 import { CreateMaterialPage } from "./pages/CreateMaterialPage";
 import { EssayGraderPage } from "./pages/EssayGraderPage";
 import { DocumentPage } from "./pages/DocumentPage";
+import { AssessmentPage } from "./pages/AssessmentPage";
 import { TakeQuizPage } from "./pages/TakeQuizPage";
 import { MonitorQuizPage } from "./pages/MonitorQuizPage";
 
@@ -79,6 +80,14 @@ export function App() {
                 element={
                   <ProtectedRoute>
                     <DocumentPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/assessment"
+                element={
+                  <ProtectedRoute>
+                    <AssessmentPage />
                   </ProtectedRoute>
                 }
               />

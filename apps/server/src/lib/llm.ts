@@ -282,3 +282,93 @@ Panduan actionType:
 
   return parsed;
 }
+
+export async function generateSpecialAssessmentWithLLM(input: {
+  title: string;
+  assessmentType: "P5_KARAKTER" | "UNJUK_KERJA" | "DIAGNOSTIK";
+  targetGrade: string;
+  notes?: string;
+}): Promise<{
+  title: string;
+  typeLabel: string;
+  targetGrade: string;
+  description: string;
+  criteria: Array<{
+    name: string;
+    description: string;
+    descriptors: {
+      sangatBaik: string;
+      baik: string;
+      cukup: string;
+      perluBimbingan: string;
+    };
+  }>;
+  scoringGuidance: string;
+}> {
+  const apiKey = process.env.OMNIROUTE_API_KEY || "sk-1a2610a1aca72e66-2f1f9d-f1fd9906";
+  const baseUrl = process.env.OMNIROUTE_BASE_URL || "http://10.0.10.223:20128/v1";
+
+  const systemPrompt = `Kamu adalah Pakar Asesmen Kurikulum Merdeka & Spesialis Penilaian Khusus Pendidikan Indonesia. 
+Tugasmu adalah menyusun Modul & Rubrik Penilaian Khusus (Asesmen Diagnostik, Rubrik Karakter P5, atau Asesmen Unjuk Kerja/Praktik) secara terstruktur.
+
+Wajib kembalikan format JSON murni tanpa markdown wrapper.
+
+Format JSON:
+{
+  "title": "Judul Rubrik Penilaian Khusus",
+  "typeLabel": "Label Tipe Penilaian (misal: Rubrik P5 Profil Pelajar Pancasila / Asesmen Diagnostik)",
+  "targetGrade": "Tingkat/Kelas",
+  "description": "Deskripsi tujuan penilaian khusus ini",
+  "criteria": [
+    {
+      "name": "Nama Kriteria / Dimensi (misal: Gotong Royong / Kemampuan Kognitif Awal)",
+      "description": "Penjelasan indikator kriteria",
+      "descriptors": {
+        "sangatBaik": "Deskripsi indikator level Sangat Baik (Skor 4)",
+        "baik": "Deskripsi indikator level Baik (Skor 3)",
+        "cukup": "Deskripsi indikator level Cukup (Skor 2)",
+        "perluBimbingan": "Deskripsi indikator level Perlu Bimbingan (Skor 1)"
+      }
+    }
+  ],
+  "scoringGuidance": "Petunjuk teknis pengolahan nilai akhir bagi guru"
+}`;
+
+  const userPrompt = `Tipe Penilaian: ${input.assessmentType}
+Judul/Topik: ${input.title}
+Target Kelas: ${input.targetGrade}
+Catatan Tambahan: ${input.notes || "Tidak ada"}`;
+
+  const response = await fetch(`${baseUrl}/chat/completions`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      model: "agent",
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userPrompt },
+      ],
+      temperature: 0.6,
+    }),
+  });
+
+  if (!response.ok) {
+    const errText = await response.text();
+    throw new Error(`LLM API Error (${response.status}): ${errText}`);
+  }
+
+  const data = (await response.json()) as any;
+  const content = data?.choices?.[0]?.message?.content;
+
+  if (!content) {
+    throw new Error("Respon AI kosong");
+  }
+
+  const cleanJson = content.replace(/```json/g, "").replace(/```/g, "").trim();
+  const parsed = JSON.parse(cleanJson);
+
+  return parsed;
+}
