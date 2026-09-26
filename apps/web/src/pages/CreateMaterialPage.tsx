@@ -45,7 +45,7 @@ export const CreateMaterialPage: React.FC = () => {
           <CardContent className="pt-5">
             <div className="flex items-center justify-between flex-wrap gap-4">
               <div>
-                <h2 className="text-xl font-bold text-neutral-900">AI Generator Materi Ajar</h2>
+                <h1 className="text-2xl font-bold text-neutral-900">AI Generator Materi Ajar</h1>
                 <p className="text-xs text-neutral-500">Semai · Menyusun Materi & Rencana Kelas Instan</p>
               </div>
               <Button variant="outline" size="sm" onClick={() => navigate("/dashboard")}>Batal</Button>

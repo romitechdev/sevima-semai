@@ -54,7 +54,7 @@ export const TakeQuizPage: React.FC = () => {
   if (submittedResult) {
     return (
       <div className="min-h-screen bg-neutral-50 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md">
+        <Card className="w-full max-w-md" role="status">
           <CardContent className="pt-6 flex flex-col items-center gap-4 text-center">
             <h2 className="text-3xl font-bold text-blue-600">Jawaban Terkirim!</h2>
             <p className="text-neutral-600">
@@ -67,6 +67,9 @@ export const TakeQuizPage: React.FC = () => {
                 {submittedResult.correctCount} dari {submittedResult.totalQuestions} soal benar
               </p>
             </div>
+            <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white" onClick={() => navigate("/")}>
+              Kembali ke Beranda
+            </Button>
           </CardContent>
         </Card>
       </div>
@@ -75,18 +78,19 @@ export const TakeQuizPage: React.FC = () => {
 
   if (!quizStarted || !quizData) {
     return (
-      <div className="min-h-screen bg-neutral-50 flex items-center justify-center p-4">
+      <main id="main-content" className="min-h-screen bg-neutral-50 flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
           <CardContent className="pt-6 flex flex-col gap-4">
             <div className="flex flex-col items-center gap-1">
               <h2 className="text-2xl font-bold text-blue-600">Semai</h2>
               <h3 className="text-lg font-semibold text-neutral-900">Masuk Kuis Formatif</h3>
             </div>
-            <form onSubmit={handleStartQuiz} className="flex flex-col gap-4">
-              {error && <Alert variant="destructive"><AlertDescription>{error}</AlertDescription></Alert>}
+            <form onSubmit={handleStartQuiz} className="flex flex-col gap-4" aria-label="Form masuk kuis">
+              {error && <Alert variant="destructive" role="alert"><AlertDescription>{error}</AlertDescription></Alert>}
               <div className="flex flex-col gap-1">
-                <Label>Kode Kuis (6 Karakter)</Label>
+                <Label htmlFor="take-quiz-code">Kode Kuis (6 Karakter)</Label>
                 <Input
+                  id="take-quiz-code"
                   className="font-mono text-center"
                   placeholder="Contoh: AB12CD"
                   value={inputCode}
@@ -96,8 +100,14 @@ export const TakeQuizPage: React.FC = () => {
                 />
               </div>
               <div className="flex flex-col gap-1">
-                <Label>Nama Lengkap Siswa</Label>
-                <Input placeholder="Ketik nama lengkapmu" value={studentName} onChange={(e) => setStudentName(e.target.value)} required />
+                <Label htmlFor="take-student-name">Nama Lengkap Siswa</Label>
+                <Input
+                  id="take-student-name"
+                  placeholder="Ketik nama lengkapmu"
+                  value={studentName}
+                  onChange={(e) => setStudentName(e.target.value)}
+                  required
+                />
               </div>
               <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white" disabled={isFetchingQuiz}>
                 {isFetchingQuiz ? "Mencari Kuis..." : "Mulai Kerjakan"}
@@ -105,49 +115,63 @@ export const TakeQuizPage: React.FC = () => {
             </form>
           </CardContent>
         </Card>
-      </div>
+      </main>
     );
   }
 
   return (
-    <div className="min-h-screen bg-neutral-50 p-4">
+    <main id="main-content" className="min-h-screen bg-neutral-50 p-4">
       <div className="max-w-2xl mx-auto flex flex-col gap-6">
         {/* Quiz Header */}
         <div className="bg-blue-600 rounded-md p-6">
-          <p className="text-xs font-semibold text-blue-200">{quizData.quiz.subject} · {quizData.quiz.grade_level}</p>
+          <p className="text-xs font-semibold text-blue-100">{quizData.quiz.subject} · {quizData.quiz.grade_level}</p>
           <h1 className="text-2xl font-bold text-white mt-1">{quizData.quiz.title}</h1>
-          <p className="text-sm text-blue-200 mt-1">Siswa: {studentName}</p>
+          <p className="text-sm text-blue-100 mt-1">Siswa: {studentName}</p>
         </div>
 
-        {error && <Alert variant="destructive"><AlertDescription>{error}</AlertDescription></Alert>}
+        {error && <Alert variant="destructive" role="alert"><AlertDescription>{error}</AlertDescription></Alert>}
 
         <form onSubmit={handleSubmitQuiz} className="flex flex-col gap-4">
           {quizData.questions.map((q, idx) => (
-            <Card key={q.id}>
-              <CardContent className="pt-4 flex flex-col gap-2">
-                <p className="text-base font-semibold text-neutral-900">{idx + 1}. {q.text}</p>
-                {(q.options as string[]).map((opt, oIdx) => (
-                  <div
-                    key={oIdx}
-                    className={`flex items-center gap-3 p-3 border rounded cursor-pointer transition-colors ${
-                      selectedAnswers[q.id] === oIdx ? "border-blue-600 bg-blue-50" : "border-neutral-200 bg-white hover:bg-neutral-50"
-                    }`}
-                    onClick={() => handleSelectOption(q.id, oIdx)}
-                  >
-                    <div className={`w-6 h-6 rounded-full border flex items-center justify-center flex-shrink-0 ${
-                      selectedAnswers[q.id] === oIdx ? "border-blue-600 bg-blue-600" : "border-neutral-300"
-                    }`}>
-                      <span className={`text-xs font-bold ${selectedAnswers[q.id] === oIdx ? "text-white" : "text-neutral-400"}`}>
-                        {String.fromCharCode(65 + oIdx)}
-                      </span>
-                    </div>
-                    <p className={`text-sm ${selectedAnswers[q.id] === oIdx ? "font-semibold text-neutral-900" : "text-neutral-700"}`}>
-                      {opt}
-                    </p>
+            <fieldset key={q.id} className="border-0 p-0 m-0">
+              <Card className="w-full">
+                <CardContent className="pt-4 flex flex-col gap-2">
+                  <legend className="sr-only">Soal {idx + 1}</legend>
+                  <p className="text-base font-semibold text-neutral-900">{idx + 1}. {q.text}</p>
+                  <div role="radiogroup" aria-label={`Pilihan jawaban soal ${idx + 1}`} className="flex flex-col gap-2">
+                    {(q.options as string[]).map((opt, oIdx) => {
+                      const selected = selectedAnswers[q.id] === oIdx;
+                      return (
+                        <label
+                          key={oIdx}
+                          className={`flex items-center gap-3 p-3 border rounded cursor-pointer transition-colors ${
+                            selected ? "border-blue-600 bg-blue-50" : "border-neutral-200 bg-white hover:bg-neutral-50"
+                          }`}
+                        >
+                          <input
+                            type="radio"
+                            className="sr-only"
+                            name={`question-${q.id}`}
+                            checked={selected}
+                            onChange={() => handleSelectOption(q.id, oIdx)}
+                          />
+                          <span aria-hidden="true" className={`w-6 h-6 rounded-full border flex items-center justify-center flex-shrink-0 ${
+                            selected ? "border-blue-600 bg-blue-600" : "border-neutral-300"
+                          }`}>
+                            <span className={`text-xs font-bold ${selected ? "text-white" : "text-neutral-500"}`}>
+                              {String.fromCharCode(65 + oIdx)}
+                            </span>
+                          </span>
+                          <span className={`text-sm ${selected ? "font-semibold text-neutral-900" : "text-neutral-700"}`}>
+                            {opt}
+                          </span>
+                        </label>
+                      );
+                    })}
                   </div>
-                ))}
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </fieldset>
           ))}
 
           <Button type="submit" size="lg" className="w-full bg-blue-600 hover:bg-blue-700 text-white" disabled={submitMutation.isPending}>
@@ -155,6 +179,6 @@ export const TakeQuizPage: React.FC = () => {
           </Button>
         </form>
       </div>
-    </div>
+    </main>
   );
 };

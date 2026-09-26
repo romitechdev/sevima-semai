@@ -59,7 +59,7 @@ export const DocumentPage: React.FC = () => {
           <CardContent className="pt-5">
             <div className="flex items-center justify-between flex-wrap gap-4">
               <div>
-                <h2 className="text-xl font-bold text-neutral-900">Dokumentasi Materi & Tugas</h2>
+                <h1 className="text-2xl font-bold text-neutral-900">Dokumentasi Materi & Tugas</h1>
                 <p className="text-xs text-neutral-500">Semai · Pusat Arsip Pembelajaran & Penugasan Guru</p>
               </div>
               <Button variant="outline" size="sm" onClick={() => navigate("/dashboard")}>Batal</Button>
@@ -117,7 +117,7 @@ export const DocumentPage: React.FC = () => {
             ) : !documents || documents.length === 0 ? (
               <div className="text-center py-8 border-2 border-dashed border-neutral-200 rounded-md">
                 <p className="text-base font-semibold text-neutral-600">Belum Ada Dokumen</p>
-                <p className="text-xs text-neutral-400 max-w-sm mx-auto mt-1">
+                <p className="text-xs text-neutral-500 max-w-sm mx-auto mt-1">
                   Gunakan form di atas untuk menyimpan dokumentasi materi atau tugas.
                 </p>
               </div>
@@ -136,7 +136,7 @@ export const DocumentPage: React.FC = () => {
                             <Badge variant={doc.type === "materi" ? "default" : "secondary"}>
                               {doc.type === "materi" ? "Materi" : "Tugas"}
                             </Badge>
-                            <span className="text-xs text-neutral-400">{doc.subject} · {doc.grade_level}</span>
+                            <span className="text-xs text-neutral-500">{doc.subject} · {doc.grade_level}</span>
                           </div>
                           <p className="text-base font-bold text-neutral-900 mt-1">{doc.title}</p>
                         </div>
@@ -163,7 +163,7 @@ export const DocumentPage: React.FC = () => {
                       <Badge variant={selectedDoc.type === "materi" ? "default" : "secondary"}>
                         {selectedDoc.type === "materi" ? "Materi" : "Tugas"}
                       </Badge>
-                      <span className="text-xs text-neutral-400">{selectedDoc.subject} · {selectedDoc.grade_level}</span>
+                      <span className="text-xs text-neutral-500">{selectedDoc.subject} · {selectedDoc.grade_level}</span>
                     </div>
                     <h2 className="text-lg font-bold text-neutral-900 mt-1">{selectedDoc.title}</h2>
                   </div>

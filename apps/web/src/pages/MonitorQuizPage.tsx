@@ -198,7 +198,7 @@ export const MonitorQuizPage: React.FC = () => {
                   <p className="text-base font-semibold text-neutral-900">{idx + 1}. {q.text}</p>
                   <div className="text-right">
                     <p className="text-lg font-black" style={{ color: accuracyColor(q.correctPercentage) }}>{q.correctPercentage}%</p>
-                    <p className="text-xs font-semibold text-neutral-400">Tingkat Akurasi</p>
+                    <p className="text-xs font-semibold text-neutral-500">Tingkat Akurasi</p>
                   </div>
                 </div>
                 <Progress value={q.correctPercentage} className="h-1.5" />

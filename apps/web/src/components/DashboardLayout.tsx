@@ -71,16 +71,15 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
           style={{ height: "calc(100vh - 4rem)" }}
         >
           <div>
-            <p className="text-xs font-semibold text-neutral-400 uppercase tracking-wider px-3 mb-3">
-              Navigasi Utama
-            </p>
-            <nav className="flex flex-col gap-1">
+            <p className="sr-only">Navigasi utama</p>
+            <nav className="flex flex-col gap-1" aria-label="Navigasi utama">
               {menuItems.map((item) => {
                 const isActive = location.pathname === item.path;
                 return (
                   <button
                     key={item.path}
                     onClick={() => navigate(item.path)}
+                    aria-current={isActive ? "page" : undefined}
                     className={cn(
                       "w-full text-left px-3 py-2 rounded-md text-sm font-medium transition-colors",
                       isActive
@@ -101,7 +100,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 p-6 max-w-6xl mx-auto w-full overflow-x-hidden">
+        <main id="main-content" className="flex-1 p-6 max-w-6xl mx-auto w-full overflow-x-hidden">
           {children}
         </main>
       </div>

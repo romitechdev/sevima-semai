@@ -84,7 +84,7 @@ export const CreateQuizPage: React.FC = () => {
           <CardContent className="pt-5">
             <div className="flex items-center justify-between flex-wrap gap-4">
               <div>
-                <h2 className="text-xl font-bold text-neutral-900">Buat Kuis Formatif</h2>
+                <h1 className="text-2xl font-bold text-neutral-900">Buat Kuis Formatif</h1>
                 <p className="text-xs text-neutral-500">Jumlah soal fleksibel (1-50). Bisa diisi manual atau digenerate AI.</p>
               </div>
               <div className="flex gap-2">

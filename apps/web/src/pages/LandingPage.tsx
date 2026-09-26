@@ -20,7 +20,7 @@ export const LandingPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-white text-neutral-900 flex flex-col justify-between p-6">
       {/* Header */}
-      <div className="max-w-5xl mx-auto w-full flex items-center justify-between pb-6 border-b border-neutral-200">
+      <header className="max-w-5xl mx-auto w-full flex items-center justify-between pb-6 border-b border-neutral-200">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-sm font-bold">S</div>
           <span className="text-lg font-bold text-neutral-900">Semai</span>
@@ -32,10 +32,10 @@ export const LandingPage: React.FC = () => {
         >
           {user ? "Buka Dashboard Guru" : "Login / Masuk Guru"}
         </Button>
-      </div>
+      </header>
 
       {/* Main Content */}
-      <div className="max-w-5xl mx-auto w-full my-12 grid grid-cols-1 sm:grid-cols-2 gap-12">
+      <main id="main-content" className="max-w-5xl mx-auto w-full my-12 grid grid-cols-1 sm:grid-cols-2 gap-12">
         {/* Left Column */}
         <div className="flex flex-col gap-6">
           <span className="text-xs font-semibold text-blue-600 bg-blue-50 px-3 py-1 border border-blue-200 rounded self-start">
@@ -71,10 +71,11 @@ export const LandingPage: React.FC = () => {
               </p>
             </div>
 
-            <form onSubmit={handleJoinQuiz} className="flex flex-col gap-4">
+            <form onSubmit={handleJoinQuiz} className="flex flex-col gap-4" aria-label="Form masuk kuis">
               <div className="flex flex-col gap-1">
-                <Label>Kode Kuis (6 Karakter)</Label>
+                <Label htmlFor="quiz-code">Kode Kuis (6 Karakter)</Label>
                 <Input
+                  id="quiz-code"
                   className="font-mono text-center text-lg tracking-widest"
                   placeholder="AB12CD"
                   value={code}
@@ -89,12 +90,12 @@ export const LandingPage: React.FC = () => {
             </form>
           </CardContent>
         </Card>
-      </div>
+      </main>
 
       {/* Footer */}
-      <div className="max-w-5xl mx-auto w-full text-center py-6 border-t border-neutral-200">
-        <p className="text-xs text-neutral-400">© 2026 Semai · Sistem Pembelajaran & Penilaian Terpadu.</p>
-      </div>
+      <footer className="max-w-5xl mx-auto w-full text-center py-6 border-t border-neutral-200">
+        <p className="text-xs text-neutral-500">© 2026 Semai · Sistem Pembelajaran & Penilaian Terpadu.</p>
+      </footer>
     </div>
   );
 };

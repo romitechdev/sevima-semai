@@ -55,7 +55,7 @@ export const EssayGraderPage: React.FC = () => {
           <CardContent className="pt-5">
             <div className="flex items-center justify-between flex-wrap gap-4">
               <div>
-                <h2 className="text-xl font-bold text-neutral-900">Koreksi Esai & Teks Otomatis</h2>
+                <h1 className="text-2xl font-bold text-neutral-900">Koreksi Esai & Teks Otomatis</h1>
                 <p className="text-xs text-neutral-500">Semai · Penilaian Jawaban Esai Berbasis AI</p>
               </div>
               <Button variant="outline" size="sm" onClick={() => navigate("/dashboard")}>Batal</Button>
@@ -105,7 +105,7 @@ export const EssayGraderPage: React.FC = () => {
                 <div className="bg-white px-6 py-2 border border-neutral-200 rounded text-center">
                   <p className="text-xs font-semibold text-blue-600 uppercase">Skor Akhir</p>
                   <p className="text-2xl font-black text-neutral-900">
-                    {evaluation.score} <span className="text-sm text-neutral-400 font-medium">/ {evaluation.maxScore}</span>
+                    {evaluation.score} <span className="text-sm text-neutral-500 font-medium">/ {evaluation.maxScore}</span>
                   </p>
                 </div>
               </div>

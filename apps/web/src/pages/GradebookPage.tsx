@@ -90,7 +90,7 @@ export const GradebookPage: React.FC = () => {
           <CardContent className="pt-5">
             <div className="flex items-center justify-between flex-wrap gap-4">
               <div>
-                <h2 className="text-xl font-bold text-neutral-900">Gradebook & Rapor Terintegrasi</h2>
+                <h1 className="text-2xl font-bold text-neutral-900">Gradebook & Rapor Terintegrasi</h1>
                 <p className="text-xs text-neutral-500">Semai · Rekap Nilai Kuis, Esai, P5 & Narasi AI Rapor</p>
               </div>
               <div className="flex gap-2 flex-wrap">
@@ -228,7 +228,7 @@ export const GradebookPage: React.FC = () => {
                           })}
                           <td className="p-2.5 text-center font-black border-b border-neutral-100">
                             {row.avgScore}
-                            {row.bestType && <div className="text-[9px] font-medium text-neutral-400">terkuat: {TYPE_LABELS[row.bestType]}</div>}
+                            {row.bestType && <div className="text-[9px] font-medium text-neutral-500">terkuat: {TYPE_LABELS[row.bestType]}</div>}
                           </td>
                         </tr>
                       ))}
@@ -249,7 +249,7 @@ export const GradebookPage: React.FC = () => {
           ) : !data || data.students.length === 0 ? (
             <div className="text-center py-8 border-2 border-dashed border-neutral-200 rounded-md">
               <p className="text-base font-semibold text-neutral-600">Belum Ada Catatan Nilai</p>
-              <p className="text-xs text-neutral-400 max-w-sm mx-auto mt-1">
+              <p className="text-xs text-neutral-500 max-w-sm mx-auto mt-1">
                 Nilai otomatis masuk saat siswa mengerjakan Kuis Formatif, Esai, atau saat Anda menginput penilaian manual.
               </p>
             </div>
@@ -262,7 +262,7 @@ export const GradebookPage: React.FC = () => {
                       <h4 className="text-sm font-bold text-neutral-900">{st.studentName}</h4>
                       <span className="text-lg font-black text-blue-600">{st.avgScore}</span>
                     </div>
-                    <p className="text-xs text-neutral-400">{st.gradesCount} catatan nilai terhubung</p>
+                    <p className="text-xs text-neutral-500">{st.gradesCount} catatan nilai terhubung</p>
                     <div className="max-h-36 overflow-y-auto flex flex-col gap-1.5">
                       {st.grades.map((g: any) => (
                         <div key={g.id} className="flex justify-between items-center p-2 bg-neutral-50 border border-neutral-200 rounded">

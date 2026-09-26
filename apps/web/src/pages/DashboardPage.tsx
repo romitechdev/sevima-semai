@@ -74,7 +74,7 @@ export const DashboardPage: React.FC = () => {
               <CardContent className="pt-5">
                 <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wider">{m.label}</p>
                 <p className="text-3xl font-bold text-neutral-900 mt-2">{m.value}</p>
-                <p className="text-xs text-neutral-400 mt-1">{m.desc}</p>
+                <p className="text-xs text-neutral-500 mt-1">{m.desc}</p>
               </CardContent>
             </Card>
           ))}
@@ -141,7 +141,7 @@ export const DashboardPage: React.FC = () => {
             ) : !quizzes || quizzes.length === 0 ? (
               <div className="text-center py-8 border-2 border-dashed border-neutral-200 rounded-md">
                 <p className="text-sm font-semibold text-neutral-600">Belum ada kuis yang dibuat</p>
-                <p className="text-xs text-neutral-400 max-w-sm mx-auto mt-1">
+                <p className="text-xs text-neutral-500 max-w-sm mx-auto mt-1">
                   Buat kuis formatif untuk mulai memantau pemahaman siswa secara real-time.
                 </p>
               </div>
@@ -164,7 +164,7 @@ export const DashboardPage: React.FC = () => {
                       </div>
                       <p className="text-sm font-bold text-neutral-900">{q.title}</p>
                       <div className="flex items-center justify-between pt-2 border-t border-neutral-100">
-                        <span className="text-xs text-neutral-400">{q.totalQuestions} Soal Pilihan Ganda</span>
+                        <span className="text-xs text-neutral-500">{q.totalQuestions} Soal Pilihan Ganda</span>
                         <span className="text-xs font-semibold text-neutral-600">{q.totalStudents} Siswa Mengumpulkan</span>
                       </div>
                     </div>

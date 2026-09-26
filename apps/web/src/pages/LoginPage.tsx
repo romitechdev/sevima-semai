@@ -85,7 +85,7 @@ export const LoginPage: React.FC = () => {
 
             <div className="flex items-center gap-3">
               <div className="flex-1 border-t border-neutral-200" />
-              <span className="text-xs text-neutral-400">atau</span>
+              <span className="text-xs text-neutral-500">atau</span>
               <div className="flex-1 border-t border-neutral-200" />
             </div>
 
