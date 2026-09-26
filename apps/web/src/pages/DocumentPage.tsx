@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { trpc } from "../lib/trpc";
 import { useAuth } from "../context/AuthContext";
+import { DashboardLayout } from "../components/DashboardLayout";
 import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
@@ -65,15 +66,15 @@ export const DocumentPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 p-4 md:p-8">
+    <DashboardLayout>
       <div className="max-w-5xl mx-auto space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
           <div>
-            <h1 className="text-2xl font-bold text-slate-800">Dokumentasi Materi & Tugas</h1>
-            <p className="text-slate-500 text-sm">Semai 🌱 — Pusat Arsip Pembelajaran & Penugasan Guru</p>
+            <h1 className="text-xl font-bold text-slate-900">Dokumentasi Materi & Tugas</h1>
+            <p className="text-slate-500 text-xs">Semai 🌱 — Pusat Arsip Pembelajaran & Penugasan Guru</p>
           </div>
-          <Button variant="outline" onClick={() => navigate("/dashboard")}>
-            Kembali ke Dashboard
+          <Button variant="outline" className="text-xs rounded-xl" onClick={() => navigate("/dashboard")}>
+            Batal
           </Button>
         </div>
 
@@ -257,6 +258,6 @@ export const DocumentPage: React.FC = () => {
           </div>
         </div>
       </div>
-    </div>
+    </DashboardLayout>
   );
 };

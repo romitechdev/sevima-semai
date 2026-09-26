@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { trpc } from "../lib/trpc";
 import { supabase } from "../lib/supabase";
+import { DashboardLayout } from "../components/DashboardLayout";
 import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 
@@ -52,27 +53,27 @@ export const MonitorQuizPage: React.FC = () => {
   const { quiz, totalStudents, totalSubmissions, questions } = data;
 
   return (
-    <div className="min-h-screen bg-slate-50 p-4 md:p-8">
+    <DashboardLayout>
       <div className="max-w-5xl mx-auto space-y-6">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-xs px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-semibold uppercase">
+              <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-800 font-bold uppercase">
                 {quiz.subject} • {quiz.grade_level}
               </span>
-              <span className="text-xs px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-mono">
+              <span className="text-xs px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-mono font-bold">
                 Kode: {quiz.code}
               </span>
             </div>
-            <h1 className="text-2xl font-bold text-slate-800 mt-1">{quiz.title}</h1>
+            <h1 className="text-xl font-bold text-slate-900 mt-1">{quiz.title}</h1>
           </div>
 
           <div className="flex items-center gap-4">
-            <div className="text-center px-4 py-2 bg-emerald-50 rounded-lg border border-emerald-200">
-              <div className="text-2xl font-black text-emerald-700">{totalStudents}</div>
-              <div className="text-xs text-emerald-800 font-medium">Siswa Submit</div>
+            <div className="text-center px-4 py-1.5 bg-indigo-50 rounded-xl border border-indigo-100">
+              <div className="text-xl font-black text-indigo-700">{totalStudents}</div>
+              <div className="text-[10px] text-indigo-800 font-bold uppercase">Siswa Submit</div>
             </div>
-            <Button variant="outline" onClick={() => navigate("/dashboard")}>
+            <Button variant="outline" className="text-xs rounded-xl" onClick={() => navigate("/dashboard")}>
               Dashboard
             </Button>
           </div>
@@ -195,6 +196,6 @@ export const MonitorQuizPage: React.FC = () => {
           ))}
         </div>
       </div>
-    </div>
+    </DashboardLayout>
   );
 };

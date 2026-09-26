@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { trpc } from "../lib/trpc";
 import { useAuth } from "../context/AuthContext";
+import { DashboardLayout } from "../components/DashboardLayout";
 import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
@@ -107,23 +108,23 @@ export const CreateQuizPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 p-4 md:p-8">
+    <DashboardLayout>
       <div className="max-w-4xl mx-auto space-y-6">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
           <div>
-            <h1 className="text-2xl font-bold text-slate-800">Buat Kuis Formatif Baru</h1>
-            <p className="text-slate-500 text-sm">Semai 🌱 — Kuis 5 Soal Cepat Instan</p>
+            <h1 className="text-xl font-bold text-slate-900">Buat Kuis Formatif Baru</h1>
+            <p className="text-slate-500 text-xs">Semai 🌱 — Kuis 5 Soal Cepat Instan</p>
           </div>
           <div className="flex items-center gap-2">
             <Button
               type="button"
-              className="bg-purple-600 hover:bg-purple-700 text-white font-semibold"
+              className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl"
               onClick={() => setShowAiModal(true)}
             >
               ✨ Auto-Generate AI
             </Button>
-            <Button variant="outline" onClick={() => navigate("/dashboard")}>
-              Kembali
+            <Button variant="outline" className="text-xs rounded-xl" onClick={() => navigate("/dashboard")}>
+              Batal
             </Button>
           </div>
         </div>
@@ -266,13 +267,13 @@ export const CreateQuizPage: React.FC = () => {
 
           <Button
             type="submit"
-            className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 font-semibold"
+            className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 font-bold rounded-xl text-sm"
             disabled={createMutation.isPending}
           >
             {createMutation.isPending ? "Menyimpan Kuis..." : "Simpan Kuis & Buka Live Monitor 🚀"}
           </Button>
         </form>
       </div>
-    </div>
+    </DashboardLayout>
   );
 };

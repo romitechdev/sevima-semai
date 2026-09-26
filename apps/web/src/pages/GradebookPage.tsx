@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { trpc } from "../lib/trpc";
 import { useAuth } from "../context/AuthContext";
+import { DashboardLayout } from "../components/DashboardLayout";
 import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
@@ -69,19 +70,19 @@ export const GradebookPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 p-4 md:p-8">
+    <DashboardLayout>
       <div className="max-w-5xl mx-auto space-y-6">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
           <div>
-            <h1 className="text-2xl font-bold text-slate-800">Gradebook & Rapor Terintegrasi</h1>
-            <p className="text-slate-500 text-sm">Semai 🌱 — Rekap Nilai Kuis, Esai, P5 & Narasi AI Rapor</p>
+            <h1 className="text-xl font-bold text-slate-900">Gradebook & Rapor Terintegrasi</h1>
+            <p className="text-slate-500 text-xs">Semai 🌱 — Rekap Nilai Kuis, Esai, P5 & Narasi AI Rapor</p>
           </div>
           <div className="flex items-center gap-2">
-            <Button className="bg-emerald-600 hover:bg-emerald-700 text-xs md:text-sm" onClick={() => setShowManualForm(true)}>
+            <Button className="bg-indigo-600 hover:bg-indigo-700 text-xs font-bold rounded-xl" onClick={() => setShowManualForm(true)}>
               + Input Nilai Manual
             </Button>
-            <Button variant="outline" onClick={() => navigate("/dashboard")}>
-              Kembali
+            <Button variant="outline" className="text-xs rounded-xl" onClick={() => navigate("/dashboard")}>
+              Batal
             </Button>
           </div>
         </div>
@@ -277,6 +278,6 @@ export const GradebookPage: React.FC = () => {
           )}
         </div>
       </div>
-    </div>
+    </DashboardLayout>
   );
 };
