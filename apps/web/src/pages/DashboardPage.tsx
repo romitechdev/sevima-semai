@@ -31,16 +31,19 @@ export const DashboardPage: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-3">
-            <Button className="bg-purple-600 hover:bg-purple-700" onClick={() => navigate("/material")}>
+            <Button className="bg-purple-600 hover:bg-purple-700 text-xs md:text-sm" onClick={() => navigate("/material")}>
               📚 Materi AI
             </Button>
-            <Button className="bg-blue-600 hover:bg-blue-700" onClick={() => navigate("/essay")}>
+            <Button className="bg-blue-600 hover:bg-blue-700 text-xs md:text-sm" onClick={() => navigate("/essay")}>
               ✍️ Koreksi Esai
             </Button>
-            <Button className="bg-emerald-600 hover:bg-emerald-700" onClick={() => navigate("/create")}>
+            <Button className="bg-amber-600 hover:bg-amber-700 text-xs md:text-sm" onClick={() => navigate("/documents")}>
+              📁 Arsip Dokumentasi
+            </Button>
+            <Button className="bg-emerald-600 hover:bg-emerald-700 text-xs md:text-sm" onClick={() => navigate("/create")}>
               + Buat Kuis
             </Button>
-            <Button variant="outline" onClick={() => signOut()}>
+            <Button variant="outline" className="text-xs md:text-sm" onClick={() => signOut()}>
               Keluar
             </Button>
           </div>
