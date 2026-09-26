@@ -294,10 +294,10 @@ export const quizRouter = router({
     }),
 
   generateWithAI: publicProcedure
-    .input(z.object({ prompt: z.string().min(5) }))
+    .input(z.object({ prompt: z.string().min(5), numQuestions: z.number().min(1).max(20).optional().default(5) }))
     .mutation(async ({ input }) => {
       try {
-        const result = await generateQuizWithLLM(input.prompt);
+        const result = await generateQuizWithLLM(input.prompt, input.numQuestions);
         return result;
       } catch (err: any) {
         throw new TRPCError({

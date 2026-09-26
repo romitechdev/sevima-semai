@@ -1,4 +1,7 @@
-export async function generateQuizWithLLM(promptOrMaterial: string): Promise<{
+export async function generateQuizWithLLM(
+  promptOrMaterial: string,
+  numQuestions: number = 5
+): Promise<{
   title: string;
   subject: string;
   gradeLevel: string;
@@ -11,7 +14,9 @@ export async function generateQuizWithLLM(promptOrMaterial: string): Promise<{
   const apiKey = process.env.OMNIROUTE_API_KEY || "sk-1a2610a1aca72e66-2f1f9d-f1fd9906";
   const baseUrl = process.env.OMNIROUTE_BASE_URL || "http://10.0.10.223:20128/v1";
 
-  const systemPrompt = `Kamu adalah asisten AI guru profesional Indonesia. Tugasmu adalah membuat kuis formatif 5 soal pilihan ganda berdasarkan materi/prompt yang diberikan.
+  const count = Math.max(1, Math.min(20, numQuestions));
+
+  const systemPrompt = `Kamu adalah asisten AI guru profesional Indonesia. Tugasmu adalah membuat kuis pilihan ganda berdasarkan materi/prompt yang diberikan.
 
 Wajib kembalikan format JSON murni tanpa markdown, tanpa penjelasan tambahan.
 
@@ -25,14 +30,13 @@ Format JSON:
       "text": "Pertanyaan soal nomor 1",
       "options": ["Pilihan A", "Pilihan B", "Pilihan C", "Pilihan D"],
       "correctIndex": 0
-    },
-    ... (total persis 5 soal)
+    }
   ]
 }
 
-Aturan:
-1. "questions" harus berisi tepat 5 soal.
-2. "options" harus berisi tepat 4 pilihan jawaban string.
+Aturan Penting:
+1. Array "questions" HARUS berisi TEPAT ${count} soal pilihan ganda.
+2. Setiap "options" harus berisi tepat 4 pilihan jawaban string.
 3. "correctIndex" adalah angka 0, 1, 2, atau 3 (posisi pilihan yang benar).
 4. Gunakan Bahasa Indonesia yang jelas dan baku.`;
 
@@ -46,7 +50,7 @@ Aturan:
       model: "agent",
       messages: [
         { role: "system", content: systemPrompt },
-        { role: "user", content: `Buatkan 5 soal kuis dari materi/prompt berikut:\n\n${promptOrMaterial}` },
+        { role: "user", content: `Buatkan TEPAT ${count} soal kuis pilihan ganda dari materi/prompt berikut:\n\n${promptOrMaterial}` },
       ],
       temperature: 0.7,
     }),

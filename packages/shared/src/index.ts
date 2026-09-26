@@ -12,7 +12,8 @@ export const createQuizSchema = z.object({
         correctIndex: z.number().int().min(0).max(3),
       })
     )
-    .length(5),
+    .min(1)
+    .max(50),
 });
 
 export type CreateQuizInput = z.infer<typeof createQuizSchema>;
