@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Label } from "@/components/ui/label";
+import { Wordmark } from "@/components/Wordmark";
 
 export const TakeQuizPage: React.FC = () => {
   const { code: urlCode } = useParams<{ code?: string }>();
@@ -53,21 +54,21 @@ export const TakeQuizPage: React.FC = () => {
 
   if (submittedResult) {
     return (
-      <div className="min-h-screen bg-neutral-50 flex items-center justify-center p-4">
+      <div className="min-dvh bg-neutral-50 flex items-center justify-center p-4">
         <Card className="w-full max-w-md" role="status">
           <CardContent className="pt-6 flex flex-col items-center gap-4 text-center">
-            <h2 className="text-3xl font-bold text-blue-600">Jawaban Terkirim!</h2>
+            <h2 className="text-3xl font-semibold text-primary">Jawaban Terkirim!</h2>
             <p className="text-neutral-600">
-              Terima kasih <span className="font-bold text-neutral-900">{studentName}</span>. Jawabanmu sudah dicatat secara real-time oleh guru.
+              Terima kasih <span className="font-semibold text-neutral-900">{studentName}</span>. Jawabanmu sudah dicatat secara real-time oleh guru.
             </p>
-            <div className="bg-blue-50 p-4 border border-blue-200 rounded-md w-full text-center">
-              <p className="text-xs font-semibold text-blue-600 uppercase">Skor Kamu</p>
-              <p className="text-3xl font-black text-neutral-900 mt-1">{submittedResult.score} / 100</p>
+            <div className="bg-primary/8 p-4 border border-primary/20 rounded-md w-full text-center">
+              <p className="text-xs font-semibold text-primary uppercase">Skor Kamu</p>
+              <p className="text-3xl font-bold text-neutral-900 mt-1 tabular-nums">{submittedResult.score} / 100</p>
               <p className="text-sm text-neutral-500 mt-1">
                 {submittedResult.correctCount} dari {submittedResult.totalQuestions} soal benar
               </p>
             </div>
-            <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white" onClick={() => navigate("/")}>
+            <Button className="w-full bg-primary hover:bg-primary/90 text-white" onClick={() => navigate("/")}>
               Kembali ke Beranda
             </Button>
           </CardContent>
@@ -78,14 +79,16 @@ export const TakeQuizPage: React.FC = () => {
 
   if (!quizStarted || !quizData) {
     return (
-      <main id="main-content" className="min-h-screen bg-neutral-50 flex items-center justify-center p-4">
+      <main id="main-content" className="min-dvh bg-neutral-50 flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
           <CardContent className="pt-6 flex flex-col gap-4">
             <div className="flex flex-col items-center gap-1">
-              <h2 className="text-2xl font-bold text-blue-600">Semai</h2>
-              <h3 className="text-lg font-semibold text-neutral-900">Masuk Kuis Formatif</h3>
+              <span className="text-2xl">
+                <Wordmark />
+              </span>
+              <h1 className="text-lg font-semibold text-neutral-900">Masuk Kuis Formatif</h1>
             </div>
-            <form onSubmit={handleStartQuiz} className="flex flex-col gap-4" aria-label="Form masuk kuis">
+            <form onSubmit={handleStartQuiz} className="flex flex-col gap-4" aria-label="Form masuk kuis" noValidate>
               {error && <Alert variant="destructive" role="alert"><AlertDescription>{error}</AlertDescription></Alert>}
               <div className="flex flex-col gap-1">
                 <Label htmlFor="take-quiz-code">Kode Kuis (6 Karakter)</Label>
@@ -97,6 +100,10 @@ export const TakeQuizPage: React.FC = () => {
                   onChange={(e) => setInputCode(e.target.value.toUpperCase())}
                   maxLength={6}
                   required
+                  autoComplete="off"
+                  inputMode="text"
+                  enterKeyHint="next"
+                  style={{ fontSize: "1rem" }}
                 />
               </div>
               <div className="flex flex-col gap-1">
@@ -107,9 +114,12 @@ export const TakeQuizPage: React.FC = () => {
                   value={studentName}
                   onChange={(e) => setStudentName(e.target.value)}
                   required
+                  autoComplete="name"
+                  enterKeyHint="go"
+                  style={{ fontSize: "1rem" }}
                 />
               </div>
-              <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white" disabled={isFetchingQuiz}>
+              <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-white" disabled={isFetchingQuiz}>
                 {isFetchingQuiz ? "Mencari Kuis..." : "Mulai Kerjakan"}
               </Button>
             </form>
@@ -120,13 +130,13 @@ export const TakeQuizPage: React.FC = () => {
   }
 
   return (
-    <main id="main-content" className="min-h-screen bg-neutral-50 p-4">
+    <main id="main-content" className="min-dvh bg-neutral-50 p-4">
       <div className="max-w-2xl mx-auto flex flex-col gap-6">
         {/* Quiz Header */}
-        <div className="bg-blue-600 rounded-md p-6">
-          <p className="text-xs font-semibold text-blue-100">{quizData.quiz.subject} · {quizData.quiz.grade_level}</p>
+        <div className="bg-primary rounded-md p-6">
+          <p className="text-xs font-semibold text-primary-foreground/80">{quizData.quiz.subject} · {quizData.quiz.grade_level}</p>
           <h1 className="text-2xl font-bold text-white mt-1">{quizData.quiz.title}</h1>
-          <p className="text-sm text-blue-100 mt-1">Siswa: {studentName}</p>
+          <p className="text-sm text-primary-foreground/80 mt-1">Siswa: {studentName}</p>
         </div>
 
         {error && <Alert variant="destructive" role="alert"><AlertDescription>{error}</AlertDescription></Alert>}
@@ -145,7 +155,7 @@ export const TakeQuizPage: React.FC = () => {
                         <label
                           key={oIdx}
                           className={`flex items-center gap-3 p-3 border rounded cursor-pointer transition-colors ${
-                            selected ? "border-blue-600 bg-blue-50" : "border-neutral-200 bg-white hover:bg-neutral-50"
+                            selected ? "border-primary bg-primary/8" : "border-neutral-200 bg-white hover:bg-neutral-50"
                           }`}
                         >
                           <input
@@ -156,7 +166,7 @@ export const TakeQuizPage: React.FC = () => {
                             onChange={() => handleSelectOption(q.id, oIdx)}
                           />
                           <span aria-hidden="true" className={`w-6 h-6 rounded-full border flex items-center justify-center flex-shrink-0 ${
-                            selected ? "border-blue-600 bg-blue-600" : "border-neutral-300"
+                            selected ? "border-primary bg-primary" : "border-neutral-300"
                           }`}>
                             <span className={`text-xs font-bold ${selected ? "text-white" : "text-neutral-500"}`}>
                               {String.fromCharCode(65 + oIdx)}
@@ -174,7 +184,7 @@ export const TakeQuizPage: React.FC = () => {
             </fieldset>
           ))}
 
-          <Button type="submit" size="lg" className="w-full bg-blue-600 hover:bg-blue-700 text-white" disabled={submitMutation.isPending}>
+          <Button type="submit" size="lg" className="w-full bg-primary hover:bg-primary/90 text-white" disabled={submitMutation.isPending}>
             {submitMutation.isPending ? "Mengirim Jawaban..." : "Kirim Semua Jawaban"}
           </Button>
         </form>

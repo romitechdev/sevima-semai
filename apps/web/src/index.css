@@ -2,11 +2,12 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/geist";
+@import "@fontsource-variable/lora";
 
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-    --font-heading: var(--font-sans);
+    --font-heading: 'Lora Variable', Georgia, serif;
     --font-sans: 'Geist Variable', sans-serif;
     --color-sidebar-ring: var(--sidebar-ring);
     --color-sidebar-border: var(--sidebar-border);
@@ -55,7 +56,7 @@
     --card-foreground: oklch(0.145 0 0);
     --popover: oklch(1 0 0);
     --popover-foreground: oklch(0.145 0 0);
-    --primary: oklch(0.205 0 0);
+    --primary: oklch(0.596 0.145 163);
     --primary-foreground: oklch(0.985 0 0);
     --secondary: oklch(0.97 0 0);
     --secondary-foreground: oklch(0.205 0 0);
@@ -75,7 +76,7 @@
     --radius: 0.625rem;
     --sidebar: oklch(0.985 0 0);
     --sidebar-foreground: oklch(0.145 0 0);
-    --sidebar-primary: oklch(0.205 0 0);
+    --sidebar-primary: oklch(0.596 0.145 163);
     --sidebar-primary-foreground: oklch(0.985 0 0);
     --sidebar-accent: oklch(0.97 0 0);
     --sidebar-accent-foreground: oklch(0.205 0 0);
@@ -123,11 +124,41 @@
     }
   body {
     @apply bg-background text-foreground;
+    /* Prevent content overflowing viewport horizontally */
+    overflow-x: hidden;
     }
   html {
     @apply font-sans;
     scroll-behavior: smooth;
+    /* Support dark/light system preference */
+    color-scheme: light dark;
     }
+  /* Serif display face for brand wordmark and page titles */
+  .wordmark, h1, h2, h3, .font-heading {
+    font-family: var(--font-heading);
+  }
+  /* Logical property for text: supports RTL if ever needed */
+  p, li, dd {
+    overflow-wrap: break-word;
+  }
+  /* Balanced headlines */
+  h1, h2, h3 {
+    text-wrap: balance;
+  }
+  /* Better body text wrapping */
+  p {
+    text-wrap: pretty;
+  }
+  /* Touch target minimum — ensure interactive elements are reachable */
+  button, [role="button"], a, label[for], select {
+    min-block-size: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+  /* Override for elements that must not be flex (e.g. block-level) */
+  a:where(:has(> *)), label:where(:has(> input)) {
+    display: flex;
+  }
 }
 
 /* Accessibility: skip link */
@@ -137,8 +168,8 @@
   left: 1rem;
   z-index: 100;
   padding: 0.5rem 1rem;
-  background: oklch(0.205 0 0);
-  color: oklch(0.985 0 0);
+  background: var(--primary);
+  color: var(--primary-foreground);
   border-radius: 0 0 0.375rem 0.375rem;
   font-size: 0.875rem;
   font-weight: 600;
@@ -149,13 +180,26 @@
   top: 0;
 }
 
+/* Accessibility: visually hidden utility — keeps content in AT tree */
+.sr-only:where(:not(:focus-within, :active)) {
+  position: absolute !important;
+  clip-path: inset(50%) !important;
+  overflow: hidden !important;
+  width: 1px !important;
+  height: 1px !important;
+  margin: -1px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  white-space: nowrap !important;
+}
+
 /* Accessibility: visible focus ring on keyboard nav */
 :focus-visible {
-  outline: 3px solid oklch(0.556 0.24 264 / 0.9);
+  outline: 3px solid color-mix(in oklch, var(--primary) 70%, transparent);
   outline-offset: 2px;
 }
 
-/* Accessibility: honor reduced motion preference */
+/* Accessibility: honor reduced motion preference (targeted, not blanket) */
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -167,4 +211,23 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* Responsive: use dynamic viewport height to handle mobile browser chrome */
+.min-dvh {
+  min-height: 100dvh;
+}
+
+/* Form: use :user-invalid instead of :invalid (only fires after interaction) */
+input:user-invalid,
+textarea:user-invalid,
+select:user-invalid {
+  border-color: oklch(0.577 0.245 27.325);
+  outline-color: oklch(0.577 0.245 27.325 / 0.4);
+}
+
+/* Sidebar transition — hardware-accelerated */
+.sidebar-transition {
+  transition: width 0.2s ease, padding 0.2s ease;
+  will-change: width;
 }

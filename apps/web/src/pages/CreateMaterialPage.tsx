@@ -69,7 +69,7 @@ export const CreateMaterialPage: React.FC = () => {
                   required
                 />
               </div>
-              <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white" disabled={generateMutation.isPending}>
+              <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-white" disabled={generateMutation.isPending}>
                 {generateMutation.isPending ? "AI Sedang Menyusun Materi..." : "Susun Materi Pembelajaran"}
               </Button>
             </form>
@@ -85,7 +85,7 @@ export const CreateMaterialPage: React.FC = () => {
                   <Badge variant="secondary">{generatedMaterial.subject} · {generatedMaterial.gradeLevel}</Badge>
                   <h2 className="text-2xl font-bold text-neutral-900 mt-2">{generatedMaterial.title}</h2>
                 </div>
-                <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white" onClick={handleCreateQuizFromMaterial}>
+                <Button size="sm" className="bg-primary hover:bg-primary/90 text-white" onClick={handleCreateQuizFromMaterial}>
                   Buat Kuis Formatif Dari Materi Ini
                 </Button>
               </div>
@@ -102,7 +102,7 @@ export const CreateMaterialPage: React.FC = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {generatedMaterial.keyPoints.map((pt, i) => (
                     <div key={i} className="flex items-start gap-2 p-3 bg-white border border-neutral-200 rounded">
-                      <span className="text-xs text-blue-600 font-bold">•</span>
+                      <span className="text-xs text-primary font-bold">•</span>
                       <span className="text-xs text-neutral-700 font-semibold">{pt}</span>
                     </div>
                   ))}
@@ -117,8 +117,8 @@ export const CreateMaterialPage: React.FC = () => {
               </div>
 
               <div className="flex flex-col gap-1">
-                <p className="text-xs font-semibold text-blue-600 uppercase">Ide Aktivitas Interaktif 5 Menit di Kelas</p>
-                <div className="bg-blue-50 p-3 border border-blue-200 rounded">
+                <p className="text-xs font-semibold text-primary uppercase">Ide Aktivitas Interaktif 5 Menit di Kelas</p>
+                <div className="bg-primary/8 p-3 border border-primary/20 rounded">
                   <p className="text-sm text-neutral-700">{generatedMaterial.interactiveActivity}</p>
                 </div>
               </div>

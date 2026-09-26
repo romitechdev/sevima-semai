@@ -60,57 +60,78 @@ export const DashboardPage: React.FC = () => {
   const totalStudentsCount = gradebookData?.students?.length || 0;
   const totalGradesCount = gradebookData?.allGrades?.length || 0;
 
+  const submittedCount = quizzes?.reduce((sum, q) => sum + (q.totalStudents || 0), 0) || 0;
+  const recentQuizzes = (quizzes || []).slice(0, 5);
+
+  const teacherName = user?.user_metadata?.name as string | undefined;
+  const greeting = new Date().toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+
   return (
     <DashboardLayout>
-      <div className="flex flex-col gap-6">
-        {/* Metric Summary Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="flex flex-col gap-8">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <div>
+            <p className="text-sm text-neutral-500">{greeting}</p>
+            <h1 className="text-2xl font-semibold tracking-tight text-neutral-900 mt-1">
+              Selamat datang, {teacherName?.split(" ")[0] || "Guru"}
+            </h1>
+          </div>
+          <Button className="bg-primary hover:bg-primary/90 text-primary-foreground w-full sm:w-auto" onClick={() => navigate("/create")}>
+            Buat Kuis Formatif
+          </Button>
+        </div>
+
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-neutral-200 rounded-xl ring-1 ring-neutral-200 overflow-hidden">
           {[
-            { label: "Total Kuis Formatif", value: totalQuizzes, desc: "Kuis terdaftar dalam sistem" },
-            { label: "Siswa Terdaftar", value: totalStudentsCount, desc: "Siswa dalam Gradebook" },
-            { label: "Total Rekap Nilai", value: totalGradesCount, desc: "Nilai kuis, esai, dan P5" },
+            { label: "Kuis Formatif", value: totalQuizzes, desc: "kuis terdaftar" },
+            { label: "Siswa Terdaftar", value: totalStudentsCount, desc: "dalam gradebook" },
+            { label: "Pengerjaan Dikumpulkan", value: submittedCount, desc: "seluruh kuis" },
+            { label: "Rekap Nilai", value: totalGradesCount, desc: "nilai tersimpan" },
           ].map((m) => (
-            <Card key={m.label}>
-              <CardContent className="pt-5">
-                <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wider">{m.label}</p>
-                <p className="text-3xl font-bold text-neutral-900 mt-2">{m.value}</p>
-                <p className="text-xs text-neutral-500 mt-1">{m.desc}</p>
-              </CardContent>
-            </Card>
+            <div key={m.label} className="bg-white p-4 sm:p-5">
+              <p className="text-xs font-medium text-neutral-500">{m.label}</p>
+              <p className="text-2xl sm:text-3xl font-semibold tracking-tight text-neutral-900 mt-2 tabular-nums">{m.value}</p>
+              <p className="text-xs text-neutral-400 mt-1">{m.desc}</p>
+            </div>
           ))}
         </div>
 
-        {/* Command Center */}
         <Card>
           <CardContent className="pt-5 flex flex-col gap-4">
-            <div>
-              <h3 className="text-base font-semibold text-neutral-900">Pusat Instruksi Pembelajaran</h3>
-              <p className="text-xs text-neutral-500">Ketik perintah untuk otomatisasi pembuatan kuis, bahan ajar, atau analisis kelas.</p>
+            <div className="flex items-center justify-between flex-wrap gap-3">
+              <div>
+                <h3 className="text-base font-semibold text-neutral-900">Instruksi AI</h3>
+                <p className="text-sm text-neutral-500 mt-0.5">Ketik perintah untuk membuat kuis, materi, atau arsip kelas.</p>
+              </div>
+              <Badge variant="secondary" className="font-mono">Agent</Badge>
             </div>
-            <form onSubmit={handleAgentSubmit}>
-              <div className="flex gap-2 flex-wrap">
+            <form onSubmit={handleAgentSubmit} noValidate>
+              <div className="flex flex-col sm:flex-row gap-2">
                 <Input
-                  placeholder="Contoh: Buatkan 5 soal kuis tentang fotosintesis untuk kelas 5 SD" aria-label="Instruksi untuk AI Agent"
+                  placeholder="Contoh: Buatkan 5 soal kuis tentang fotosintesis untuk kelas 5 SD"
+                  aria-label="Instruksi untuk AI Agent"
                   value={agentInput}
                   onChange={(e) => setAgentInput(e.target.value)}
                   className="flex-1"
                 />
-                <Button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white" disabled={executeAgentMutation.isPending}>
-                  {executeAgentMutation.isPending ? "Memproses..." : "Jalankan Instruksi"}
+                <Button type="submit" className="bg-primary hover:bg-primary/90 text-primary-foreground sm:w-auto" disabled={executeAgentMutation.isPending}>
+                  {executeAgentMutation.isPending ? "Memproses..." : "Jalankan"}
                 </Button>
               </div>
             </form>
             {agentError && <Alert variant="destructive"><AlertDescription>{agentError}</AlertDescription></Alert>}
             {agentResult && (
-              <div className="bg-neutral-50 p-4 border border-neutral-200 rounded-md flex flex-col gap-3">
-                <p className="text-xs font-semibold text-neutral-500 uppercase">Tindakan: {agentResult.actionType}</p>
-                <p className="text-sm font-bold text-neutral-900">{agentResult.title}</p>
-                <p className="text-xs text-neutral-500">{agentResult.summary}</p>
-                <div className="bg-white p-3 border border-neutral-200 rounded text-xs text-neutral-700 whitespace-pre-line leading-relaxed">
+              <div className="bg-neutral-50 p-4 border border-neutral-200 rounded-lg flex flex-col gap-3">
+                <div className="flex items-center gap-2">
+                  <Badge variant="secondary" className="font-mono">{agentResult.actionType}</Badge>
+                  <p className="text-sm font-semibold text-neutral-900">{agentResult.title}</p>
+                </div>
+                <p className="text-sm text-neutral-600">{agentResult.summary}</p>
+                <div className="bg-white p-3 border border-neutral-200 rounded-md text-sm text-neutral-700 whitespace-pre-line leading-relaxed">
                   {agentResult.details}
                 </div>
                 {agentResult.suggestedTargetUrl && agentResult.actionType !== "ADVISE" && (
-                  <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white self-start" onClick={handleApplyAgentAction}>
+                  <Button size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground self-start" onClick={handleApplyAgentAction}>
                     Buka Modul Terkait
                   </Button>
                 )}
@@ -119,58 +140,57 @@ export const DashboardPage: React.FC = () => {
           </CardContent>
         </Card>
 
-        {/* Active Quizzes List */}
         <Card>
           <CardContent className="pt-5 flex flex-col gap-4">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between flex-wrap gap-3">
               <div>
-                <h3 className="text-base font-semibold text-neutral-900">Daftar Kuis Formatif</h3>
-                <p className="text-xs text-neutral-500">Hasil dan statistik pengerjaan kuis oleh siswa</p>
+                <h3 className="text-base font-semibold text-neutral-900">Kuis Formatif</h3>
+                <p className="text-sm text-neutral-500 mt-0.5">Kuis terbaru beserta jumlah siswa yang mengumpulkan.</p>
               </div>
-              <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white" onClick={() => navigate("/create")}>
-                + Buat Kuis Baru
+              <Button variant="outline" size="sm" onClick={() => navigate("/create")}>
+                Buat Kuis Baru
               </Button>
             </div>
 
             {isQuizzesLoading ? (
-              <div className="flex flex-col gap-2 p-4">
-                <Skeleton className="w-full h-4" />
-                <Skeleton className="w-full h-4" />
-                <Skeleton className="w-full h-4" />
+              <div className="flex flex-col gap-3 p-1">
+                <Skeleton className="w-full h-16" />
+                <Skeleton className="w-full h-16" />
+                <Skeleton className="w-full h-16" />
               </div>
             ) : !quizzes || quizzes.length === 0 ? (
-              <div className="text-center py-8 border-2 border-dashed border-neutral-200 rounded-md">
-                <p className="text-sm font-semibold text-neutral-600">Belum ada kuis yang dibuat</p>
-                <p className="text-xs text-neutral-500 max-w-sm mx-auto mt-1">
-                  Buat kuis formatif untuk mulai memantau pemahaman siswa secara real-time.
+              <div className="text-center py-10 border border-dashed border-neutral-300 rounded-lg">
+                <p className="text-sm font-semibold text-neutral-700">Belum ada kuis</p>
+                <p className="text-sm text-neutral-500 max-w-sm mx-auto mt-1">
+                  Buat kuis formatif pertama untuk mulai memantau pemahaman siswa secara real-time.
                 </p>
+                <Button size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground mt-4" onClick={() => navigate("/create")}>
+                  Buat Kuis Pertama
+                </Button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {quizzes.map((q) => (
-                  <div
-                    key={q.id}
-                    onClick={() => navigate(`/monitor/${q.id}`)}
-                    onKeyDown={(e) => e.key === "Enter" && navigate(`/monitor/${q.id}`)}
-                    role="link"
-                    tabIndex={0}
-                    aria-label={`Lihat detail kuis ${q.title}`}
-                    className="p-4 border border-neutral-200 bg-white rounded-md cursor-pointer hover:border-blue-300 hover:bg-blue-50 transition-colors"
-                  >
-                    <div className="flex flex-col gap-2">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-semibold text-neutral-500">{q.subject} · {q.gradeLevel}</span>
-                        <span className="text-xs font-mono bg-neutral-100 px-2 py-0.5 border border-neutral-200 rounded">Kode: {q.code}</span>
+              <ul className="list-none p-0 m-0 flex flex-col divide-y divide-neutral-100 border border-neutral-200 rounded-lg overflow-hidden">
+                {recentQuizzes.map((q) => (
+                  <li key={q.id}>
+                    <button
+                      onClick={() => navigate(`/monitor/${q.id}`)}
+                      className="w-full text-left px-4 py-3.5 hover:bg-neutral-50 transition-colors flex items-center gap-4"
+                      aria-label={`Lihat detail kuis ${q.title}`}
+                    >
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-neutral-900 truncate">{q.title}</p>
+                        <p className="text-xs text-neutral-500 mt-0.5">
+                          {q.subject} · {q.gradeLevel} · {q.totalQuestions} soal
+                        </p>
                       </div>
-                      <p className="text-sm font-bold text-neutral-900">{q.title}</p>
-                      <div className="flex items-center justify-between pt-2 border-t border-neutral-100">
-                        <span className="text-xs text-neutral-500">{q.totalQuestions} Soal Pilihan Ganda</span>
-                        <span className="text-xs font-semibold text-neutral-600">{q.totalStudents} Siswa Mengumpulkan</span>
-                      </div>
-                    </div>
-                  </div>
+                      <span className="text-xs font-mono text-neutral-400 flex-shrink-0">{q.code}</span>
+                      <span className="text-sm font-medium text-neutral-700 tabular-nums flex-shrink-0">
+                        {q.totalStudents} <span className="text-xs text-neutral-400 font-normal">siswa</span>
+                      </span>
+                    </button>
+                  </li>
                 ))}
-              </div>
+              </ul>
             )}
           </CardContent>
         </Card>

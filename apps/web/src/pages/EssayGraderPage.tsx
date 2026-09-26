@@ -86,7 +86,7 @@ export const EssayGraderPage: React.FC = () => {
                 <Label>Jawaban Teks Siswa</Label>
                 <Textarea rows={4} className="font-mono" placeholder="Ketik atau tempel teks jawaban siswa di sini..." value={studentAnswer} onChange={(e) => setStudentAnswer(e.target.value)} required />
               </div>
-              <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white" disabled={evaluateMutation.isPending}>
+              <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-white" disabled={evaluateMutation.isPending}>
                 {evaluateMutation.isPending ? "AI Sedang Mengoreksi..." : "Koreksi Jawaban Otomatis"}
               </Button>
             </form>
@@ -103,7 +103,7 @@ export const EssayGraderPage: React.FC = () => {
                   <p className="text-xs text-neutral-500 mt-1">Ulasan otomatis berdasarkan rubrik</p>
                 </div>
                 <div className="bg-white px-6 py-2 border border-neutral-200 rounded text-center">
-                  <p className="text-xs font-semibold text-blue-600 uppercase">Skor Akhir</p>
+                  <p className="text-xs font-semibold text-primary uppercase">Skor Akhir</p>
                   <p className="text-2xl font-black text-neutral-900">
                     {evaluation.score} <span className="text-sm text-neutral-500 font-medium">/ {evaluation.maxScore}</span>
                   </p>
@@ -140,7 +140,7 @@ export const EssayGraderPage: React.FC = () => {
                 </div>
               </div>
               <div className="flex flex-col gap-1">
-                <p className="text-xs font-semibold text-blue-600 uppercase">Rekomendasi Perbaikan Jawaban Ideal</p>
+                <p className="text-xs font-semibold text-primary uppercase">Rekomendasi Perbaikan Jawaban Ideal</p>
                 <div className="bg-white p-3 border border-neutral-200 rounded whitespace-pre-line">
                   <p className="text-sm text-neutral-700 leading-relaxed">{evaluation.suggestedCorrection}</p>
                 </div>

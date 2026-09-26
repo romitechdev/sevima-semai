@@ -94,7 +94,7 @@ export const GradebookPage: React.FC = () => {
                 <p className="text-xs text-neutral-500">Semai · Rekap Nilai Kuis, Esai, P5 & Narasi AI Rapor</p>
               </div>
               <div className="flex gap-2 flex-wrap">
-                <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white" onClick={() => setShowRekap(!showRekap)}>Rekap Nilai</Button>
+                <Button size="sm" className="bg-primary hover:bg-primary/90 text-white" onClick={() => setShowRekap(!showRekap)}>Rekap Nilai</Button>
                 <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white" onClick={() => setShowManualForm(true)}>+ Input Nilai Manual</Button>
                 <Button size="sm" variant="outline" onClick={() => navigate("/dashboard")}>Batal</Button>
               </div>
@@ -130,13 +130,13 @@ export const GradebookPage: React.FC = () => {
                     <Label>Skor (0-100)</Label>
                     <Input type="number" min={0} max={100} value={manualScore} onChange={(e) => setManualScore(Number(e.target.value))} />
                   </div>
-                  <div className="flex flex-col gap-1 col-span-2">
+                  <div className="flex flex-col gap-1 sm:col-span-2">
                     <Label>Catatan / Feedback Guru</Label>
                     <Input placeholder="Catatan perkembangan atau aspek yang dinilai..." value={manualFeedback} onChange={(e) => setManualFeedback(e.target.value)} />
                   </div>
-                  <div className="col-span-2 flex justify-end gap-2 pt-2">
+                  <div className="sm:col-span-2 flex justify-end gap-2 pt-2">
                     <Button type="button" variant="outline" size="sm" onClick={() => setShowManualForm(false)}>Batal</Button>
-                    <Button type="submit" size="sm" className="bg-blue-600 hover:bg-blue-700 text-white">Simpan Nilai Terintegrasi</Button>
+                    <Button type="submit" size="sm" className="bg-primary hover:bg-primary/90 text-white">Simpan Nilai Terintegrasi</Button>
                   </div>
                 </div>
               </form>
@@ -146,17 +146,17 @@ export const GradebookPage: React.FC = () => {
 
         {/* AI Report */}
         {aiReport && (
-          <Card className="border-2 border-blue-400">
+          <Card className="border-2 border-primary/60">
             <CardContent className="pt-5 flex flex-col gap-4">
               <div className="flex items-center justify-between flex-wrap gap-2 border-b pb-3">
                 <div>
-                  <p className="text-xs font-semibold text-blue-600 uppercase">Draft Narasi Rapor Kurikulum Merdeka AI</p>
+                  <p className="text-xs font-semibold text-primary uppercase">Draft Narasi Rapor Kurikulum Merdeka AI</p>
                   <h3 className="text-lg font-bold text-neutral-900 mt-1">Rapor Perkembangan: {aiReport.studentName}</h3>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="text-right">
                     <p className="text-2xl font-black text-neutral-900">{aiReport.overallScore}</p>
-                    <p className="text-xs font-semibold text-blue-600">{aiReport.gradeCategory}</p>
+                    <p className="text-xs font-semibold text-primary">{aiReport.gradeCategory}</p>
                   </div>
                   <Button variant="ghost" size="sm" onClick={() => setAiReport(null)}>Tutup</Button>
                 </div>
@@ -200,7 +200,7 @@ export const GradebookPage: React.FC = () => {
                 <div className="flex items-center justify-between flex-wrap gap-2 p-4 border-b">
                   <h4 className="text-sm font-semibold text-neutral-700">Rekap Nilai per Siswa</h4>
                   <p className="text-xs text-neutral-500">
-                    Rata-rata kelas: <span className="text-blue-600 font-bold">{kelasAvg}</span> · {data.students.length} siswa
+                    Rata-rata kelas: <span className="text-primary font-bold">{kelasAvg}</span> · {data.students.length} siswa
                   </p>
                 </div>
                 <div className="overflow-x-auto p-2">
@@ -260,7 +260,7 @@ export const GradebookPage: React.FC = () => {
                   <CardContent className="pt-4 flex flex-col gap-3">
                     <div className="flex items-center justify-between pb-2">
                       <h4 className="text-sm font-bold text-neutral-900">{st.studentName}</h4>
-                      <span className="text-lg font-black text-blue-600">{st.avgScore}</span>
+                      <span className="text-lg font-black text-primary">{st.avgScore}</span>
                     </div>
                     <p className="text-xs text-neutral-500">{st.gradesCount} catatan nilai terhubung</p>
                     <div className="max-h-36 overflow-y-auto flex flex-col gap-1.5">
@@ -276,7 +276,7 @@ export const GradebookPage: React.FC = () => {
                     </div>
                     <Button
                       size="sm"
-                      className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                      className="w-full bg-primary hover:bg-primary/90 text-white"
                       onClick={() => handleGenerateReport(st.studentName)}
                       disabled={generateReportMutation.isPending && selectedStudent === st.studentName}
                     >

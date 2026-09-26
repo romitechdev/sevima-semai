@@ -98,7 +98,7 @@ export const DocumentPage: React.FC = () => {
                   <Label>Isi Dokumen / Teks Tugas</Label>
                   <Textarea rows={5} placeholder="Ketik detail materi atau rincian instruksi tugas..." value={content} onChange={(e) => setContent(e.target.value)} required />
                 </div>
-                <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white" disabled={createMutation.isPending}>
+                <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-white" disabled={createMutation.isPending}>
                   {createMutation.isPending ? "Simpan..." : "Simpan Arsip"}
                 </Button>
               </form>
@@ -126,7 +126,7 @@ export const DocumentPage: React.FC = () => {
                 {documents.map((doc: any) => (
                   <Card
                     key={doc.id}
-                    className={`cursor-pointer transition-colors ${selectedDoc?.id === doc.id ? "border-blue-500 bg-blue-50" : "hover:border-neutral-300"}`}
+                    className={`cursor-pointer transition-colors ${selectedDoc?.id === doc.id ? "border-primary bg-primary/8" : "hover:border-neutral-300"}`}
                     onClick={() => setSelectedDoc(doc)}
                   >
                     <CardContent className="pt-4 flex flex-col gap-2">
@@ -156,7 +156,7 @@ export const DocumentPage: React.FC = () => {
             )}
 
             {selectedDoc && (
-              <Card className="border border-blue-300 mt-6">
+              <Card className="border border-primary/30 mt-6">
                 <CardContent className="pt-5 flex flex-col gap-4">
                   <div className="border-b pb-3">
                     <div className="flex items-center gap-2">

@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Label } from "@/components/ui/label";
+import { Wordmark } from "@/components/Wordmark";
 
 export const LoginPage: React.FC = () => {
   const [isRegister, setIsRegister] = useState(false);
@@ -60,21 +61,22 @@ export const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-neutral-100 p-4">
+    <div className="min-dvh flex items-center justify-center bg-neutral-100 p-4">
       <Card className="w-full max-w-sm">
         <CardContent className="pt-6">
           <div className="flex flex-col gap-6">
-            {/* Logo */}
             <div className="flex flex-col items-center gap-2">
-              <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-lg">S</div>
-              <h2 className="text-xl font-bold text-neutral-900 text-center">
+              <span className="text-2xl">
+                <Wordmark />
+              </span>
+              <h1 className="text-xl font-semibold text-neutral-900 text-center">
                 {isRegister ? "Registrasi Tenaga Pendidik" : "Masuk Portal Guru"}
-              </h2>
-              <p className="text-xs text-neutral-500 text-center">Semai · Menyemai generasi, mengefisiensi profesi.</p>
+              </h1>
+              <p className="text-xs text-neutral-500 text-center">Semai, Menyemai generasi, mengefisiensi profesi.</p>
             </div>
 
             {error && (
-              <Alert variant="destructive">
+              <Alert variant="destructive" role="alert">
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
             )}
@@ -83,35 +85,64 @@ export const LoginPage: React.FC = () => {
               Masuk dengan Google
             </Button>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3" role="separator" aria-label="atau">
               <div className="flex-1 border-t border-neutral-200" />
-              <span className="text-xs text-neutral-500">atau</span>
+              <span className="text-xs text-neutral-500" aria-hidden="true">atau</span>
               <div className="flex-1 border-t border-neutral-200" />
             </div>
 
-            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4" noValidate>
               {isRegister && (
                 <div className="flex flex-col gap-1">
-                  <Label>Nama Lengkap Guru</Label>
-                  <Input placeholder="Contoh: Rina S.Pd" value={name} onChange={(e) => setName(e.target.value)} required aria-label="Nama lengkap guru" />
+                  <Label htmlFor="register-name">Nama Lengkap Guru</Label>
+                  <Input
+                    id="register-name"
+                    placeholder="Contoh: Rina S.Pd"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    required
+                    autoComplete="name"
+                    style={{ fontSize: "1rem" }}
+                  />
                 </div>
               )}
               <div className="flex flex-col gap-1">
-                <Label>Email Sekolah / Pribadi</Label>
-                <Input type="email" placeholder="nama@sekolah.sch.id" value={email} onChange={(e) => setEmail(e.target.value)} required aria-label="Email" />
+                <Label htmlFor="login-email">Email Sekolah / Pribadi</Label>
+                <Input
+                  id="login-email"
+                  type="email"
+                  placeholder="nama@sekolah.sch.id"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  autoComplete={isRegister ? "email" : "username"}
+                  inputMode="email"
+                  enterKeyHint="next"
+                  style={{ fontSize: "1rem" }}
+                />
               </div>
               <div className="flex flex-col gap-1">
-                <Label>Kata Sandi</Label>
-                <Input type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required aria-label="Kata sandi" />
+                <Label htmlFor="login-password">Kata Sandi</Label>
+                <Input
+                  id="login-password"
+                  type="password"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  autoComplete={isRegister ? "new-password" : "current-password"}
+                  enterKeyHint="done"
+                  style={{ fontSize: "1rem" }}
+                />
               </div>
-              <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white" disabled={loading}>
+              <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-white" disabled={loading}>
                 {loading ? "Memproses..." : isRegister ? "Daftar Akun Guru" : "Masuk Dashboard"}
               </Button>
             </form>
 
             <p className="text-xs text-neutral-500 text-center">
               {isRegister ? "Sudah memiliki akun?" : "Belum memiliki akun?"}{" "}
-              <button type="button" className="text-blue-600 hover:underline font-medium" onClick={() => { setIsRegister(!isRegister); setError(null); }}>
+              <button type="button" className="text-primary hover:underline font-medium" onClick={() => { setIsRegister(!isRegister); setError(null); }}>
                 {isRegister ? "Masuk di sini" : "Registrasi di sini"}
               </button>
             </p>

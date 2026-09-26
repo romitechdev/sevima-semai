@@ -1,19 +1,29 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { Button } from "./ui/button";
+import { Wordmark } from "./Wordmark";
 import { cn } from "@/lib/utils";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
 }
 
+const menuItems = [
+  { label: "Ringkasan", path: "/dashboard" },
+  { label: "Kuis Formatif", path: "/create" },
+  { label: "Materi Ajar AI", path: "/material" },
+  { label: "Koreksi Esai AI", path: "/essay" },
+  { label: "Arsip Dokumentasi", path: "/documents" },
+  { label: "Gradebook & Rapor", path: "/gradebook" },
+];
+
 export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const mainRef = useRef<HTMLElement>(null);
 
-  // On mobile: sidebar closed by default; on desktop: open by default
   const [sidebarOpen, setSidebarOpen] = useState(() => window.innerWidth >= 768);
   const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768);
 
@@ -21,60 +31,50 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
     const handleResize = () => {
       const mobile = window.innerWidth < 768;
       setIsMobile(mobile);
-      // Auto-close sidebar when resizing to mobile, auto-open on desktop
-      if (!mobile) setSidebarOpen(true);
-      else setSidebarOpen(false);
+      setSidebarOpen(!mobile);
     };
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Close sidebar when navigating on mobile
   const handleNavClick = (path: string) => {
     navigate(path);
-    if (isMobile) setSidebarOpen(false);
+    if (isMobile) {
+      setSidebarOpen(false);
+      setTimeout(() => mainRef.current?.focus(), 50);
+    }
   };
 
-  const menuItems = [
-    { label: "Ringkasan", path: "/dashboard" },
-    { label: "Kuis Formatif", path: "/create" },
-    { label: "Materi Ajar AI", path: "/material" },
-    { label: "Koreksi Esai AI", path: "/essay" },
-    { label: "Arsip Dokumentasi", path: "/documents" },
-    { label: "Gradebook & Rapor", path: "/gradebook" },
-  ];
+  const isDrawerOpen = isMobile && sidebarOpen;
 
   return (
-    <div className="min-h-screen bg-neutral-50 text-neutral-900 flex flex-col w-full">
-      {/* Header */}
+    <div className="min-dvh bg-neutral-50 text-neutral-900 flex flex-col w-full">
       <header className="h-16 bg-white border-b border-neutral-200 px-4 sm:px-6 flex items-center justify-between sticky top-0 z-30 w-full">
         <div className="flex items-center gap-3">
           <button
-            className="p-2 rounded hover:bg-neutral-100 text-neutral-600 transition-colors flex-shrink-0"
+            className="p-2 rounded-md hover:bg-neutral-100 text-neutral-600 transition-colors flex-shrink-0"
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            aria-label={sidebarOpen ? "Tutup Sidebar" : "Buka Sidebar"}
+            aria-label={sidebarOpen ? "Tutup menu navigasi" : "Buka menu navigasi"}
             aria-expanded={sidebarOpen}
+            aria-controls="sidebar-nav"
           >
-            <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" aria-hidden="true">
               <path d="M3 12h18M3 6h18M3 18h18" strokeLinecap="round" />
             </svg>
           </button>
-          <div
-            className="flex items-center gap-2 cursor-pointer select-none"
+          <button
             onClick={() => navigate("/dashboard")}
+            aria-label="Kembali ke dashboard Semai"
+            className="text-lg hover:opacity-80 transition-opacity rounded-md"
           >
-            <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">S</div>
-            <div className="flex items-baseline gap-1">
-              <span className="text-base sm:text-lg font-semibold text-neutral-900">Semai</span>
-              <span className="hidden sm:inline text-xs text-neutral-400">v1.0</span>
-            </div>
-          </div>
+            <Wordmark />
+          </button>
         </div>
 
-        <div className="flex items-center gap-2 sm:gap-4 min-w-0">
+        <div className="flex items-center gap-3 sm:gap-4 min-w-0">
           <div className="hidden sm:flex flex-col items-end min-w-0">
-            <span className="text-xs text-neutral-700 truncate max-w-[160px]">{user?.email}</span>
-            <span className="text-xs text-neutral-400">Tenaga Pendidik</span>
+            <span className="text-sm font-medium text-neutral-800 truncate max-w-[200px]">{user?.email}</span>
+            <span className="text-xs text-neutral-500">Tenaga Pendidik</span>
           </div>
           <Button variant="outline" size="sm" onClick={() => signOut()} className="flex-shrink-0">
             Keluar
@@ -82,10 +82,63 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
         </div>
       </header>
 
-      {/* Main Body */}
       <div className="flex flex-1 w-full relative">
-        {/* Mobile overlay backdrop */}
-        {isMobile && sidebarOpen && (
+        <aside
+          id="sidebar-nav"
+          className={cn(
+            "bg-white border-r border-neutral-200 flex flex-col justify-between flex-shrink-0 z-30",
+            isMobile
+              ? cn(
+                  "fixed top-16 left-0 sidebar-transition",
+                  isDrawerOpen ? "w-64 p-3 shadow-xl" : "w-0 p-0 overflow-hidden"
+                )
+              : cn(
+                  "sticky top-16 sidebar-transition",
+                  sidebarOpen ? "w-60 p-3" : "w-0 p-0 overflow-hidden"
+                )
+          )}
+          style={{ height: "calc(100dvh - 4rem)" }}
+          aria-label="Navigasi utama"
+          aria-hidden={isMobile && !sidebarOpen}
+        >
+          <nav aria-label="Menu halaman" className="min-w-[13rem]">
+            <ul className="flex flex-col gap-0.5 list-none p-0 m-0">
+              {menuItems.map((item) => {
+                const isActive = location.pathname === item.path;
+                return (
+                  <li key={item.path}>
+                    <button
+                      onClick={() => handleNavClick(item.path)}
+                      aria-current={isActive ? "page" : undefined}
+                      tabIndex={isMobile && !sidebarOpen ? -1 : 0}
+                      className={cn(
+                        "w-full text-left pl-3 pr-2 py-2 rounded-md text-sm transition-colors whitespace-nowrap flex items-center gap-2.5",
+                        isActive
+                          ? "bg-primary/8 font-semibold text-primary"
+                          : "font-medium text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900"
+                      )}
+                    >
+                      <span
+                        className={cn(
+                          "w-1 h-4 rounded-full flex-shrink-0 transition-colors",
+                          isActive ? "bg-primary" : "bg-transparent"
+                        )}
+                        aria-hidden="true"
+                      />
+                      {item.label}
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          </nav>
+
+          <p className="text-xs text-neutral-400 px-3 py-3 border-t border-neutral-100 whitespace-nowrap min-w-[13rem]" aria-hidden="true">
+            Semai, Sistem Pembelajaran Terpadu
+          </p>
+        </aside>
+
+        {isDrawerOpen && (
           <div
             className="fixed inset-0 bg-black/30 z-20"
             aria-hidden="true"
@@ -93,52 +146,13 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
           />
         )}
 
-        {/* Sidebar */}
-        <aside
-          className={cn(
-            "bg-white border-r border-neutral-200 flex flex-col justify-between flex-shrink-0 transition-all duration-200 z-30",
-            // Mobile: fixed drawer overlay; Desktop: sticky inline sidebar
-            isMobile
-              ? cn(
-                  "fixed top-16 left-0 h-[calc(100vh-4rem)]",
-                  sidebarOpen ? "w-64 p-4 shadow-xl" : "w-0 p-0 overflow-hidden"
-                )
-              : cn(
-                  "sticky top-16 h-[calc(100vh-4rem)]",
-                  sidebarOpen ? "w-60 p-4" : "w-0 p-0 overflow-hidden"
-                )
-          )}
+        <main
+          id="main-content"
+          ref={mainRef}
+          tabIndex={-1}
+          className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full overflow-x-hidden min-w-0 focus-visible:outline-none"
+          {...(isDrawerOpen ? { inert: true } : {})}
         >
-          <div className="min-w-[13rem]">
-            <nav className="flex flex-col gap-1" aria-label="Navigasi utama">
-              {menuItems.map((item) => {
-                const isActive = location.pathname === item.path;
-                return (
-                  <button
-                    key={item.path}
-                    onClick={() => handleNavClick(item.path)}
-                    aria-current={isActive ? "page" : undefined}
-                    className={cn(
-                      "w-full text-left px-3 py-2.5 rounded-md text-sm font-medium transition-colors whitespace-nowrap",
-                      isActive
-                        ? "bg-blue-600 text-white"
-                        : "text-neutral-700 hover:bg-neutral-100"
-                    )}
-                  >
-                    {item.label}
-                  </button>
-                );
-              })}
-            </nav>
-          </div>
-
-          <p className="text-xs text-neutral-400 text-center py-2 border-t border-neutral-100 whitespace-nowrap min-w-[13rem]">
-            Semai · Sistem Pembelajaran Terpadu
-          </p>
-        </aside>
-
-        {/* Main Content */}
-        <main id="main-content" className="flex-1 p-4 sm:p-6 max-w-6xl mx-auto w-full overflow-x-hidden min-w-0">
           {children}
         </main>
       </div>
