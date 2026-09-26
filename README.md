@@ -1,8 +1,11 @@
 # Semai — Platform Pengajar Terpadu
 
+[![CI/CD Pipeline](https://github.com/romitechdev/sevima-semai/actions/workflows/ci.yml/badge.svg)](https://github.com/romitechdev/sevima-semai/actions)
+[![Demo](https://img.shields.io/badge/demo-live-15803d)](https://semai.romitech.me)
+
 > **"Menyemai generasi, mengefisiensi profesi."**
 
-Semai adalah platform berbasis AI untuk tenaga pendidik di Indonesia. Dirancang untuk mengurangi beban administratif guru — menyusun kuis formatif, membuat bahan ajar, mengoreksi esai, merekap nilai, hingga menyusun narasi rapor Kurikulum Merdeka — semuanya dalam satu antarmuka terintegrasi.
+Semai adalah platform berbasis AI untuk tenaga pendidik di Indonesia. Dirancang untuk mengurangi beban administratif guru — menyusun kuis formatif, membuat bahan ajar, mengoreksi esai, merekap nilai, hingga menyusun narasi rapor perkembangan siswa — semuanya dalam satu antarmuka terintegrasi.
 
 Siswa tidak perlu membuat akun. Mereka cukup membuka browser di HP, memasukkan kode kuis dari guru, dan langsung mengerjakan.
 
@@ -44,7 +47,7 @@ Siswa tidak perlu membuat akun. Mereka cukup membuka browser di HP, memasukkan k
 | **Koreksi Esai AI** | Nilai jawaban esai siswa berdasarkan rubrik guru: skor 0–100, feedback, kelebihan, area perbaikan |
 | **AI Agent (Pusat Instruksi)** | Ketik perintah natural language → AI routing ke modul yang tepat (buat kuis/materi/arsip/saran) |
 | **Gradebook Terintegrasi** | Rekap nilai dari kuis, esai, unjuk kerja, dan P5 dalam satu tabel per siswa |
-| **Narasi Rapor AI** | Generate narasi rapor perkembangan siswa bergaya Kurikulum Merdeka dari data nilai tersimpan |
+| **Narasi Rapor AI** | Generate narasi rapor perkembangan siswa dari data nilai tersimpan, sesuai format rapor sekolah |
 | **Arsip Dokumentasi** | Simpan dan kelola dokumen materi pembelajaran serta tugas/penugasan |
 
 ### Untuk Siswa (Tanpa Akun)
@@ -597,7 +600,7 @@ Sistem menggunakan model `"agent"` dengan format request identik OpenAI Chat Com
 | `generateMaterialWithLLM(topic)` | Buat bahan ajar terstruktur dalam JSON | 0.7 |
 | `evaluateEssayWithLLM({question, rubric, answer})` | Nilai esai 0–100 dengan feedback | 0.5 |
 | `runAgentCommandWithLLM(command)` | Parse natural language → action type | 0.6 |
-| `generateStudentHolisticReportWithLLM({name, grades})` | Narasi rapor Kurikulum Merdeka | 0.6 |
+| `generateStudentHolisticReportWithLLM({name, grades})` | Narasi rapor perkembangan siswa | 0.6 |
 
 Semua fungsi mengembalikan JSON murni. Server mem-parse dan memvalidasi output sebelum mengembalikan ke client.
 

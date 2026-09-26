@@ -1,20 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
   <defs>
-    <!-- Gradient biru sesuai brand: blue-600 ke blue-700 -->
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#3b82f6"/>
-      <stop offset="100%" stop-color="#1d4ed8"/>
+      <stop offset="0%" stop-color="#22c55e"/>
+      <stop offset="100%" stop-color="#15803d"/>
     </linearGradient>
-    <!-- Shadow halus -->
-    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
-      <feDropShadow dx="0" dy="1" stdDeviation="1.5" flood-color="#1e3a8a" flood-opacity="0.35"/>
-    </filter>
   </defs>
-
-  <!-- Lingkaran latar biru (sama persis dengan avatar "S" di header) -->
-  <circle cx="32" cy="32" r="30" fill="url(#bg)" filter="url(#shadow)"/>
-
-  <!-- Huruf S putih — font-weight bold, optical center -->
+  <circle cx="32" cy="32" r="30" fill="url(#bg)"/>
   <text
     x="32"
     y="44"
