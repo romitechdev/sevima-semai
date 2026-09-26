@@ -213,3 +213,72 @@ Berikan penilaian, skor 0-100, ulasan, kelebihan, kekurangan, dan jawaban perbai
 
   return parsed;
 }
+
+export async function runAgentCommandWithLLM(command: string): Promise<{
+  actionType: "CREATE_QUIZ" | "CREATE_MATERIAL" | "ADVISE" | "DOCU_NOTE";
+  title: string;
+  summary: string;
+  details: string;
+  suggestedTargetUrl: string;
+  actionPayload?: any;
+}> {
+  const apiKey = process.env.OMNIROUTE_API_KEY || "sk-1a2610a1aca72e66-2f1f9d-f1fd9906";
+  const baseUrl = process.env.OMNIROUTE_BASE_URL || "http://10.0.10.223:20128/v1";
+
+  const systemPrompt = `Kamu adalah Semai Agent OS — AI Orchestrator & Asisten Pintar Guru Indonesia. 
+Tugasmu adalah menganalisis instruksi/perintah guru dan menentukan tindakan terbaik yang harus diambil oleh platform Semai.
+
+Wajib kembalikan format JSON murni tanpa markdown wrapper.
+
+Format JSON:
+{
+  "actionType": "CREATE_QUIZ" | "CREATE_MATERIAL" | "ADVISE" | "DOCU_NOTE",
+  "title": "Judul Hasil Tindakan Agent",
+  "summary": "Ringkasan tindakan yang diambil Agent 1-2 kalimat",
+  "details": "Detail saran / materi / rekomendasi instruksional untuk guru",
+  "suggestedTargetUrl": "/create" atau "/material" atau "/documents" atau "/dashboard",
+  "actionPayload": {
+    "topic": "nama topik yang diekstrak",
+    "promptText": "teks prompt siap pakai untuk generator"
+  }
+}
+
+Panduan actionType:
+- CREATE_QUIZ: jika guru ingin membuat soal/kuis (target: /create)
+- CREATE_MATERIAL: jika guru ingin bahan ajar/rangkuman materi (target: /material)
+- ADVISE: jika guru minta ide ice breaking, strategi kelas, remedial, atau saran mengajar
+- DOCU_NOTE: jika guru ingin mengarsipkan instruksi atau tugas (target: /documents)`;
+
+  const response = await fetch(`${baseUrl}/chat/completions`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      model: "agent",
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: `Perintah Guru: "${command}"` },
+      ],
+      temperature: 0.6,
+    }),
+  });
+
+  if (!response.ok) {
+    const errText = await response.text();
+    throw new Error(`LLM API Error (${response.status}): ${errText}`);
+  }
+
+  const data = (await response.json()) as any;
+  const content = data?.choices?.[0]?.message?.content;
+
+  if (!content) {
+    throw new Error("Respon Agent AI kosong");
+  }
+
+  const cleanJson = content.replace(/```json/g, "").replace(/```/g, "").trim();
+  const parsed = JSON.parse(cleanJson);
+
+  return parsed;
+}
