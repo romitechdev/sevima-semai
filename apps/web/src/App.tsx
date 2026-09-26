@@ -7,6 +7,7 @@ import { AuthProvider, useAuth } from "./context/AuthContext";
 import { LoginPage } from "./pages/LoginPage";
 import { DashboardPage } from "./pages/DashboardPage";
 import { CreateQuizPage } from "./pages/CreateQuizPage";
+import { CreateMaterialPage } from "./pages/CreateMaterialPage";
 import { TakeQuizPage } from "./pages/TakeQuizPage";
 import { MonitorQuizPage } from "./pages/MonitorQuizPage";
 
@@ -52,6 +53,14 @@ export function App() {
                 element={
                   <ProtectedRoute>
                     <CreateQuizPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/material"
+                element={
+                  <ProtectedRoute>
+                    <CreateMaterialPage />
                   </ProtectedRoute>
                 }
               />

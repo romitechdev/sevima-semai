@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { trpc } from "../lib/trpc";
 import { useAuth } from "../context/AuthContext";
 import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card";
@@ -10,6 +10,7 @@ import { Button } from "../components/ui/button";
 export const CreateQuizPage: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [title, setTitle] = useState("");
   const [subject, setSubject] = useState("");
@@ -18,6 +19,14 @@ export const CreateQuizPage: React.FC = () => {
 
   const [aiPrompt, setAiPrompt] = useState("");
   const [showAiModal, setShowAiModal] = useState(false);
+
+  useEffect(() => {
+    const state = location.state as { initialPrompt?: string } | null;
+    if (state?.initialPrompt) {
+      setAiPrompt(state.initialPrompt);
+      setShowAiModal(true);
+    }
+  }, [location.state]);
 
   const [questions, setQuestions] = useState<
     Array<{ text: string; options: [string, string, string, string]; correctIndex: number }>
