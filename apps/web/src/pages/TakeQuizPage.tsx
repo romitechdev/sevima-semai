@@ -57,18 +57,18 @@ export const TakeQuizPage: React.FC = () => {
       <div className="min-dvh bg-neutral-50 flex items-center justify-center p-4">
         <Card className="w-full max-w-md" role="status">
           <CardContent className="pt-6 flex flex-col items-center gap-4 text-center">
-            <h2 className="text-3xl font-semibold text-primary">Jawaban Terkirim!</h2>
+            <h2 className="text-3xl font-medium text-neutral-950">Jawaban Terkirim!</h2>
             <p className="text-neutral-600">
-              Terima kasih <span className="font-semibold text-neutral-900">{studentName}</span>. Jawabanmu sudah dicatat secara real-time oleh guru.
+              Terima kasih <span className="font-medium text-neutral-950">{studentName}</span>. Jawabanmu sudah dicatat secara real-time oleh guru.
             </p>
-            <div className="bg-primary/8 p-4 border border-primary/20 rounded-md w-full text-center">
-              <p className="text-xs font-semibold text-primary uppercase">Skor Kamu</p>
+            <div className="bg-neutral-50 p-4 border-neutral-200 rounded-sm w-full text-center">
+              <p className="text-xs font-medium text-neutral-950 uppercase">Skor Kamu</p>
               <p className="text-3xl font-bold text-neutral-900 mt-1 tabular-nums">{submittedResult.score} / 100</p>
               <p className="text-sm text-neutral-500 mt-1">
                 {submittedResult.correctCount} dari {submittedResult.totalQuestions} soal benar
               </p>
             </div>
-            <Button className="w-full bg-primary hover:bg-primary/90 text-white" onClick={() => navigate("/")}>
+            <Button className="w-full bg-neutral-900 hover:bg-neutral-800 text-white" onClick={() => navigate("/")}>
               Kembali ke Beranda
             </Button>
           </CardContent>
@@ -86,7 +86,7 @@ export const TakeQuizPage: React.FC = () => {
               <span className="text-2xl">
                 <Wordmark />
               </span>
-              <h1 className="text-lg font-semibold text-neutral-900">Masuk Kuis Formatif</h1>
+              <h1 className="text-lg font-medium text-neutral-950">Masuk Kuis Formatif</h1>
             </div>
             <form onSubmit={handleStartQuiz} className="flex flex-col gap-4" aria-label="Form masuk kuis" noValidate>
               {error && <Alert variant="destructive" role="alert"><AlertDescription>{error}</AlertDescription></Alert>}
@@ -119,7 +119,7 @@ export const TakeQuizPage: React.FC = () => {
                   style={{ fontSize: "1rem" }}
                 />
               </div>
-              <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-white" disabled={isFetchingQuiz}>
+              <Button type="submit" className="w-full bg-neutral-900 hover:bg-neutral-800 text-white" disabled={isFetchingQuiz}>
                 {isFetchingQuiz ? "Mencari Kuis..." : "Mulai Kerjakan"}
               </Button>
             </form>
@@ -133,10 +133,10 @@ export const TakeQuizPage: React.FC = () => {
     <main id="main-content" className="min-dvh bg-neutral-50 p-4">
       <div className="max-w-2xl mx-auto flex flex-col gap-6">
         {/* Quiz Header */}
-        <div className="bg-primary rounded-md p-6">
-          <p className="text-xs font-semibold text-primary-foreground/80">{quizData.quiz.subject} · {quizData.quiz.grade_level}</p>
+        <div className="bg-neutral-900 rounded-sm p-6">
+          <p className="text-xs font-medium text-white/80">{quizData.quiz.subject} · {quizData.quiz.grade_level}</p>
           <h1 className="text-2xl font-bold text-white mt-1">{quizData.quiz.title}</h1>
-          <p className="text-sm text-primary-foreground/80 mt-1">Siswa: {studentName}</p>
+          <p className="text-sm text-white/80 mt-1">Siswa: {studentName}</p>
         </div>
 
         {error && <Alert variant="destructive" role="alert"><AlertDescription>{error}</AlertDescription></Alert>}
@@ -147,15 +147,15 @@ export const TakeQuizPage: React.FC = () => {
               <Card className="w-full">
                 <CardContent className="pt-4 flex flex-col gap-2">
                   <legend className="sr-only">Soal {idx + 1}</legend>
-                  <p className="text-base font-semibold text-neutral-900">{idx + 1}. {q.text}</p>
+                  <p className="text-base font-medium text-neutral-950">{idx + 1}. {q.text}</p>
                   <div role="radiogroup" aria-label={`Pilihan jawaban soal ${idx + 1}`} className="flex flex-col gap-2">
                     {(q.options as string[]).map((opt, oIdx) => {
                       const selected = selectedAnswers[q.id] === oIdx;
                       return (
                         <label
                           key={oIdx}
-                          className={`flex items-center gap-3 p-3 border rounded cursor-pointer transition-colors ${
-                            selected ? "border-primary bg-primary/8" : "border-neutral-200 bg-white hover:bg-neutral-50"
+                          className={`flex items-center gap-3 p-3 border rounded-sm cursor-pointer transition-colors ${
+                            selected ? "border-neutral-900 bg-neutral-100" : "border-neutral-200 bg-white hover:bg-neutral-50"
                           }`}
                         >
                           <input
@@ -166,13 +166,13 @@ export const TakeQuizPage: React.FC = () => {
                             onChange={() => handleSelectOption(q.id, oIdx)}
                           />
                           <span aria-hidden="true" className={`w-6 h-6 rounded-full border flex items-center justify-center flex-shrink-0 ${
-                            selected ? "border-primary bg-primary" : "border-neutral-300"
+                            selected ? "border-neutral-900 bg-neutral-900" : "border-neutral-300"
                           }`}>
                             <span className={`text-xs font-bold ${selected ? "text-white" : "text-neutral-500"}`}>
                               {String.fromCharCode(65 + oIdx)}
                             </span>
                           </span>
-                          <span className={`text-sm ${selected ? "font-semibold text-neutral-900" : "text-neutral-700"}`}>
+                          <span className={`text-sm ${selected ? "font-medium text-neutral-950" : "text-neutral-700"}`}>
                             {opt}
                           </span>
                         </label>
@@ -184,7 +184,7 @@ export const TakeQuizPage: React.FC = () => {
             </fieldset>
           ))}
 
-          <Button type="submit" size="lg" className="w-full bg-primary hover:bg-primary/90 text-white" disabled={submitMutation.isPending}>
+          <Button type="submit" size="lg" className="w-full bg-neutral-900 hover:bg-neutral-800 text-white" disabled={submitMutation.isPending}>
             {submitMutation.isPending ? "Mengirim Jawaban..." : "Kirim Semua Jawaban"}
           </Button>
         </form>

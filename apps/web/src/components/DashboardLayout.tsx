@@ -52,7 +52,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
       <header className="h-16 bg-white border-b border-neutral-200 px-4 sm:px-6 flex items-center justify-between sticky top-0 z-30 w-full">
         <div className="flex items-center gap-3">
           <button
-            className="p-2 rounded-md hover:bg-neutral-100 text-neutral-600 transition-colors flex-shrink-0"
+            className="p-2 rounded-sm hover:bg-neutral-100 text-neutral-600 transition-colors flex-shrink-0"
             onClick={() => setSidebarOpen(!sidebarOpen)}
             aria-label={sidebarOpen ? "Tutup menu navigasi" : "Buka menu navigasi"}
             aria-expanded={sidebarOpen}
@@ -65,7 +65,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
           <button
             onClick={() => navigate("/dashboard")}
             aria-label="Kembali ke dashboard Semai"
-            className="text-lg hover:opacity-80 transition-opacity rounded-md"
+            className="text-lg hover:opacity-80 transition-opacity rounded-sm"
           >
             <Wordmark />
           </button>
@@ -112,16 +112,16 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
                       aria-current={isActive ? "page" : undefined}
                       tabIndex={isMobile && !sidebarOpen ? -1 : 0}
                       className={cn(
-                        "w-full text-left pl-3 pr-2 py-2 rounded-md text-sm transition-colors whitespace-nowrap flex items-center gap-2.5",
+                        "w-full text-left pl-3 pr-2 py-2 rounded-sm text-sm transition-colors whitespace-nowrap flex items-center gap-2.5",
                         isActive
-                          ? "bg-primary/8 font-semibold text-primary"
+                          ? "bg-neutral-100 font-medium text-neutral-900"
                           : "font-medium text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900"
                       )}
                     >
                       <span
                         className={cn(
                           "w-1 h-4 rounded-full flex-shrink-0 transition-colors",
-                          isActive ? "bg-primary" : "bg-transparent"
+                          isActive ? "bg-neutral-900" : "bg-transparent"
                         )}
                         aria-hidden="true"
                       />

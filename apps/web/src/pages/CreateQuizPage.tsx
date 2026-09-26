@@ -88,7 +88,7 @@ export const CreateQuizPage: React.FC = () => {
                 <p className="text-xs text-neutral-500">Jumlah soal fleksibel (1-50). Bisa diisi manual atau digenerate AI.</p>
               </div>
               <div className="flex gap-2">
-                <Button size="sm" className="bg-primary hover:bg-primary/90 text-white" onClick={() => setShowAiModal(true)}>
+                <Button size="sm" className="bg-neutral-900 hover:bg-neutral-800 text-white" onClick={() => setShowAiModal(true)}>
                   Auto-Generate AI
                 </Button>
                 <Button size="sm" variant="outline" onClick={() => navigate("/dashboard")}>Batal</Button>
@@ -115,7 +115,7 @@ export const CreateQuizPage: React.FC = () => {
               </div>
               <DialogFooter>
                 <Button type="button" variant="outline" size="sm" onClick={() => setShowAiModal(false)}>Batal</Button>
-                <Button type="submit" size="sm" className="bg-primary hover:bg-primary/90 text-white" disabled={generateAiMutation.isPending}>
+                <Button type="submit" size="sm" className="bg-neutral-900 hover:bg-neutral-800 text-white" disabled={generateAiMutation.isPending}>
                   {generateAiMutation.isPending ? `Membuat ${aiNumQuestions} soal...` : `Generate ${aiNumQuestions} Soal`}
                 </Button>
               </DialogFooter>
@@ -129,7 +129,7 @@ export const CreateQuizPage: React.FC = () => {
           {/* Quiz Info */}
           <Card>
             <CardContent className="pt-5 flex flex-col gap-4">
-              <h4 className="text-sm font-semibold text-neutral-700">Informasi Kuis</h4>
+              <h4 className="text-sm font-medium text-neutral-700">Informasi Kuis</h4>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="flex flex-col gap-1">
                   <Label>Judul Kuis / Topik</Label>
@@ -149,8 +149,8 @@ export const CreateQuizPage: React.FC = () => {
 
           {/* Questions Header */}
           <div className="flex items-center justify-between">
-            <span className="text-sm font-semibold text-neutral-700">Daftar Soal ({questions.length})</span>
-            <Button type="button" size="sm" className="bg-primary hover:bg-primary/90 text-white" onClick={addQuestion}>+ Tambah Soal</Button>
+            <span className="text-sm font-medium text-neutral-700">Daftar Soal ({questions.length})</span>
+            <Button type="button" size="sm" className="bg-neutral-900 hover:bg-neutral-800 text-white" onClick={addQuestion}>+ Tambah Soal</Button>
           </div>
 
           {/* Questions */}
@@ -171,11 +171,11 @@ export const CreateQuizPage: React.FC = () => {
                   {q.options.map((opt, oIdx) => (
                     <div
                       key={oIdx}
-                      className={`flex items-center gap-2 p-2 border rounded cursor-pointer ${q.correctIndex === oIdx ? "border-primary bg-primary/8" : "border-neutral-200 bg-white"}`}
+                      className={`flex items-center gap-2 p-2 border rounded-sm cursor-pointer ${q.correctIndex === oIdx ? "border-neutral-900 bg-neutral-100" : "border-neutral-200 bg-white"}`}
                       onClick={() => updateCorrectIndex(qIdx, oIdx)}
                     >
-                      <div className={`w-4 h-4 rounded-full border-2 flex-shrink-0 ${q.correctIndex === oIdx ? "border-primary bg-primary" : "border-neutral-300"}`} />
-                      <span className="text-xs font-semibold text-neutral-500">{String.fromCharCode(65 + oIdx)}.</span>
+                      <div className={`w-4 h-4 rounded-full border-2 flex-shrink-0 ${q.correctIndex === oIdx ? "border-neutral-900 bg-neutral-900" : "border-neutral-300"}`} />
+                      <span className="text-xs font-medium text-neutral-500">{String.fromCharCode(65 + oIdx)}.</span>
                       <Input
                         className="border-0 p-0 h-auto text-xs focus-visible:ring-0 bg-transparent"
                         placeholder={`Pilihan ${String.fromCharCode(65 + oIdx)}`}
@@ -191,7 +191,7 @@ export const CreateQuizPage: React.FC = () => {
             </Card>
           ))}
 
-          <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-white" disabled={createMutation.isPending}>
+          <Button type="submit" className="w-full bg-neutral-900 hover:bg-neutral-800 text-white" disabled={createMutation.isPending}>
             {createMutation.isPending ? "Menyimpan Kuis..." : `Simpan Kuis (${questions.length} Soal) & Buka Monitor`}
           </Button>
         </form>

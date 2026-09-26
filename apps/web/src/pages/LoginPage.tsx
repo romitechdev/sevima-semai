@@ -69,10 +69,10 @@ export const LoginPage: React.FC = () => {
               <span className="text-2xl">
                 <Wordmark />
               </span>
-              <h1 className="text-xl font-semibold text-neutral-900 text-center">
+              <h1 className="text-xl font-medium text-neutral-950 text-center tracking-tight">
                 {isRegister ? "Registrasi Tenaga Pendidik" : "Masuk Portal Guru"}
               </h1>
-              <p className="text-xs text-neutral-500 text-center">Semai, Menyemai generasi, mengefisiensi profesi.</p>
+              <p className="text-xs text-neutral-400 text-center">Semai, Menyemai generasi, mengefisiensi profesi.</p>
             </div>
 
             {error && (
@@ -81,13 +81,13 @@ export const LoginPage: React.FC = () => {
               </Alert>
             )}
 
-            <Button type="button" variant="outline" className="w-full" disabled={loading} onClick={handleGoogleLogin}>
+            <Button type="button" variant="outline" className="w-full rounded-sm" disabled={loading} onClick={handleGoogleLogin}>
               Masuk dengan Google
             </Button>
 
             <div className="flex items-center gap-3" role="separator" aria-label="atau">
               <div className="flex-1 border-t border-neutral-200" />
-              <span className="text-xs text-neutral-500" aria-hidden="true">atau</span>
+              <span className="text-xs text-neutral-400" aria-hidden="true">atau</span>
               <div className="flex-1 border-t border-neutral-200" />
             </div>
 
@@ -135,14 +135,14 @@ export const LoginPage: React.FC = () => {
                   style={{ fontSize: "1rem" }}
                 />
               </div>
-              <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-white" disabled={loading}>
+              <Button type="submit" className="w-full bg-neutral-900 hover:bg-neutral-800 text-white rounded-sm" disabled={loading}>
                 {loading ? "Memproses..." : isRegister ? "Daftar Akun Guru" : "Masuk Dashboard"}
               </Button>
             </form>
 
-            <p className="text-xs text-neutral-500 text-center">
+            <p className="text-xs text-neutral-400 text-center">
               {isRegister ? "Sudah memiliki akun?" : "Belum memiliki akun?"}{" "}
-              <button type="button" className="text-primary hover:underline font-medium" onClick={() => { setIsRegister(!isRegister); setError(null); }}>
+              <button type="button" className="text-neutral-900 hover:underline font-medium" onClick={() => { setIsRegister(!isRegister); setError(null); }}>
                 {isRegister ? "Masuk di sini" : "Registrasi di sini"}
               </button>
             </p>

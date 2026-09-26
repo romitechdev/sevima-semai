@@ -73,7 +73,7 @@ export const MonitorQuizPage: React.FC = () => {
   if (isLoading || !data) {
     return (
       <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-4 border-neutral-900 border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -96,16 +96,16 @@ export const MonitorQuizPage: React.FC = () => {
               <div>
                 <div className="flex items-center gap-2 flex-wrap">
                   <Badge variant="secondary">{quiz.subject} · {quiz.grade_level}</Badge>
-                  <span className="text-xs font-mono bg-neutral-100 px-2 py-0.5 border border-neutral-200 rounded">Kode: {quiz.code}</span>
+                  <span className="text-xs font-mono bg-neutral-100 px-2 py-0.5 border border-neutral-200 rounded-sm">Kode: {quiz.code}</span>
                 </div>
                 <h2 className="text-xl font-bold text-neutral-900 mt-1">{quiz.title}</h2>
               </div>
               <div className="flex items-center gap-3 flex-wrap">
-                <div className="text-center px-4 py-1.5 bg-primary/8 border border-primary/15 rounded">
-                  <p className="text-xl font-black text-primary">{totalStudents}</p>
-                  <p className="text-xs font-semibold text-primary">Siswa Submit</p>
+                <div className="text-center px-4 py-1.5 bg-neutral-100 border border-neutral-200 rounded-sm">
+                  <p className="text-xl font-black text-neutral-900">{totalStudents}</p>
+                  <p className="text-xs font-medium text-neutral-950">Siswa Submit</p>
                 </div>
-                <div className="text-center px-4 py-1.5 rounded" style={{
+                <div className="text-center px-4 py-1.5 rounded-sm" style={{
                   backgroundColor: wsStatus === "connected" ? "#dcfce7" : wsStatus === "connecting" ? "#fef9c3" : "#fee2e2",
                   borderColor: wsStatus === "connected" ? "#bbf7d0" : wsStatus === "connecting" ? "#fef08a" : "#fecaca",
                 }} aria-live="polite">
@@ -126,9 +126,9 @@ export const MonitorQuizPage: React.FC = () => {
           {/* Student Access */}
           <Card className="bg-green-50 border-green-200">
             <CardContent className="pt-4 flex flex-col gap-2">
-              <h4 className="text-sm font-semibold text-green-800">Akses Siswa</h4>
+              <h4 className="text-sm font-medium text-green-800">Akses Siswa</h4>
               <p className="text-xs text-neutral-500">Minta siswa buka link:</p>
-              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 font-mono bg-white p-2 border border-neutral-200 rounded">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 font-mono bg-white p-2 border border-neutral-200 rounded-sm">
                 <span className="text-sm font-bold text-neutral-900 break-all">{window.location.origin}/quiz/{quiz.code}</span>
                 <span className="text-xs text-green-600 flex-shrink-0">Kode: {quiz.code}</span>
               </div>
@@ -138,10 +138,10 @@ export const MonitorQuizPage: React.FC = () => {
           {/* AI Remedial */}
           <Card>
             <CardContent className="pt-4 flex flex-col gap-2">
-              <h4 className="text-sm font-semibold text-neutral-700">AI Micro-Remedial Assistant</h4>
+              <h4 className="text-sm font-medium text-neutral-700">AI Micro-Remedial Assistant</h4>
               <p className="text-xs text-neutral-500">Menganalisis konsep yang paling banyak salah & buatkan rincian intervensi 2 menit.</p>
               <Button
-                size="sm" className="w-full bg-primary hover:bg-primary/90 text-white"
+                size="sm" className="w-full bg-neutral-900 hover:bg-neutral-800 text-white"
                 onClick={() => {
                   setAiLoading(true);
                   setTimeout(() => {
@@ -159,13 +159,13 @@ export const MonitorQuizPage: React.FC = () => {
 
         {/* Live Activity Feed */}
         {liveFeed.length > 0 && (
-          <Card className="border border-primary/20 bg-primary/8">
+          <Card className="border border-neutral-200 bg-neutral-100">
             <CardContent className="pt-4 flex flex-col gap-2">
-              <h4 className="text-sm font-semibold text-primary" aria-live="polite">Aktivitas Real-time</h4>
+              <h4 className="text-sm font-medium text-neutral-950" aria-live="polite">Aktivitas Real-time</h4>
               <div className="flex flex-col gap-1" aria-live="polite">
                 {liveFeed.map((item, idx) => (
                   <div key={idx} className="flex items-center gap-2 text-xs text-neutral-600">
-                    <span className="w-2 h-2 rounded-full bg-primary/80 animate-pulse" aria-hidden="true" />
+                    <span className="w-2 h-2 rounded-full bg-neutral-1000 animate-pulse" aria-hidden="true" />
                     {item}
                   </div>
                 ))}
@@ -176,9 +176,9 @@ export const MonitorQuizPage: React.FC = () => {
 
         {/* AI Analysis Result */}
         {aiAnalysis && (
-          <Card className="border border-primary/20 bg-primary/8">
+          <Card className="border border-neutral-200 bg-neutral-100">
             <CardContent className="pt-4 flex flex-col gap-2">
-              <h3 className="text-base font-semibold text-primary">Hasil Diagnosis AI Micro-Remedial</h3>
+              <h3 className="text-base font-medium text-neutral-950">Hasil Diagnosis AI Micro-Remedial</h3>
               <p className="text-sm text-neutral-700 whitespace-pre-line leading-relaxed">{aiAnalysis}</p>
             </CardContent>
           </Card>
@@ -186,7 +186,7 @@ export const MonitorQuizPage: React.FC = () => {
 
         {/* Per-Question Analysis */}
         <div className="flex flex-col gap-4">
-          <h3 className="text-base font-semibold text-neutral-900">Analisis Per-Soal Real-time</h3>
+          <h3 className="text-base font-medium text-neutral-950">Analisis Per-Soal Real-time</h3>
           {questions.map((q, idx) => (
             <Card
               key={q.questionId}
@@ -195,10 +195,10 @@ export const MonitorQuizPage: React.FC = () => {
             >
               <CardContent className="pt-4 flex flex-col gap-2">
                 <div className="flex items-center justify-between">
-                  <p className="text-base font-semibold text-neutral-900">{idx + 1}. {q.text}</p>
+                  <p className="text-base font-medium text-neutral-950">{idx + 1}. {q.text}</p>
                   <div className="text-right">
                     <p className="text-lg font-black" style={{ color: accuracyColor(q.correctPercentage) }}>{q.correctPercentage}%</p>
-                    <p className="text-xs font-semibold text-neutral-500">Tingkat Akurasi</p>
+                    <p className="text-xs font-medium text-neutral-500">Tingkat Akurasi</p>
                   </div>
                 </div>
                 <Progress value={q.correctPercentage} className="h-1.5" />
@@ -209,13 +209,13 @@ export const MonitorQuizPage: React.FC = () => {
                     return (
                       <div
                         key={oIdx}
-                        className={`flex justify-between items-center p-2.5 border rounded ${isCorrect ? "border-green-500 bg-green-50" : "border-neutral-200 bg-white"}`}
+                        className={`flex justify-between items-center p-2.5 border rounded-sm ${isCorrect ? "border-green-500 bg-green-50" : "border-neutral-200 bg-white"}`}
                       >
                         <div className="flex items-center gap-2">
                           <span className={`text-xs font-bold ${isCorrect ? "text-green-700" : "text-neutral-500"}`}>{String.fromCharCode(65 + oIdx)}.</span>
                           <span className={`text-xs ${isCorrect ? "text-neutral-900" : "text-neutral-600"}`}>{opt}</span>
                         </div>
-                        <span className="text-xs font-mono bg-neutral-100 px-2 py-0.5 rounded">{count} siswa</span>
+                        <span className="text-xs font-mono bg-neutral-100 px-2 py-0.5 rounded-sm">{count} siswa</span>
                       </div>
                     );
                   })}

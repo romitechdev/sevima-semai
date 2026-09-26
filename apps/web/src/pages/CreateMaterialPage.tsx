@@ -58,7 +58,7 @@ export const CreateMaterialPage: React.FC = () => {
         {/* Generator Form */}
         <Card>
           <CardContent className="pt-5 flex flex-col gap-4">
-            <h3 className="text-base font-semibold text-neutral-900">Buat Bahan Ajar Otomatis</h3>
+            <h3 className="text-base font-medium text-neutral-950">Buat Bahan Ajar Otomatis</h3>
             <form onSubmit={handleGenerate} className="flex flex-col gap-4">
               <div className="flex flex-col gap-1">
                 <Label>Topik atau Pokok Bahasan</Label>
@@ -69,7 +69,7 @@ export const CreateMaterialPage: React.FC = () => {
                   required
                 />
               </div>
-              <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-white" disabled={generateMutation.isPending}>
+              <Button type="submit" className="w-full bg-neutral-900 hover:bg-neutral-800 text-white" disabled={generateMutation.isPending}>
                 {generateMutation.isPending ? "AI Sedang Menyusun Materi..." : "Susun Materi Pembelajaran"}
               </Button>
             </form>
@@ -85,40 +85,40 @@ export const CreateMaterialPage: React.FC = () => {
                   <Badge variant="secondary">{generatedMaterial.subject} · {generatedMaterial.gradeLevel}</Badge>
                   <h2 className="text-2xl font-bold text-neutral-900 mt-2">{generatedMaterial.title}</h2>
                 </div>
-                <Button size="sm" className="bg-primary hover:bg-primary/90 text-white" onClick={handleCreateQuizFromMaterial}>
+                <Button size="sm" className="bg-neutral-900 hover:bg-neutral-800 text-white" onClick={handleCreateQuizFromMaterial}>
                   Buat Kuis Formatif Dari Materi Ini
                 </Button>
               </div>
 
               <div className="flex flex-col gap-1">
-                <p className="text-xs font-semibold text-neutral-500 uppercase">Ringkasan Singkat</p>
-                <div className="bg-neutral-50 p-3 border border-neutral-200 rounded">
+                <p className="text-xs font-medium text-neutral-500 uppercase">Ringkasan Singkat</p>
+                <div className="bg-neutral-50 p-3 border border-neutral-200 rounded-sm">
                   <p className="text-sm text-neutral-700 leading-relaxed">{generatedMaterial.summary}</p>
                 </div>
               </div>
 
               <div className="flex flex-col gap-2">
-                <p className="text-xs font-semibold text-neutral-500 uppercase">Poin-Poin Kunci (Key Takeaways)</p>
+                <p className="text-xs font-medium text-neutral-500 uppercase">Poin-Poin Kunci (Key Takeaways)</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {generatedMaterial.keyPoints.map((pt, i) => (
-                    <div key={i} className="flex items-start gap-2 p-3 bg-white border border-neutral-200 rounded">
-                      <span className="text-xs text-primary font-bold">•</span>
-                      <span className="text-xs text-neutral-700 font-semibold">{pt}</span>
+                    <div key={i} className="flex items-start gap-2 p-3 bg-white border border-neutral-200 rounded-sm">
+                      <span className="text-xs text-neutral-900 font-bold">•</span>
+                      <span className="text-xs text-neutral-700 font-medium">{pt}</span>
                     </div>
                   ))}
                 </div>
               </div>
 
               <div className="flex flex-col gap-1">
-                <p className="text-xs font-semibold text-neutral-500 uppercase">Penjelasan Materi Lengkap</p>
-                <div className="bg-white p-4 border border-neutral-200 rounded whitespace-pre-line">
+                <p className="text-xs font-medium text-neutral-500 uppercase">Penjelasan Materi Lengkap</p>
+                <div className="bg-white p-4 border border-neutral-200 rounded-sm whitespace-pre-line">
                   <p className="text-sm text-neutral-700 leading-relaxed">{generatedMaterial.explanation}</p>
                 </div>
               </div>
 
               <div className="flex flex-col gap-1">
-                <p className="text-xs font-semibold text-primary uppercase">Ide Aktivitas Interaktif 5 Menit di Kelas</p>
-                <div className="bg-primary/8 p-3 border border-primary/20 rounded">
+                <p className="text-xs font-medium text-neutral-950 uppercase">Ide Aktivitas Interaktif 5 Menit di Kelas</p>
+                <div className="bg-neutral-100 p-3 border border-neutral-200 rounded-sm">
                   <p className="text-sm text-neutral-700">{generatedMaterial.interactiveActivity}</p>
                 </div>
               </div>

@@ -73,7 +73,7 @@ export const DocumentPage: React.FC = () => {
           {/* Form */}
           <Card>
             <CardContent className="pt-5 flex flex-col gap-4">
-              <h3 className="text-base font-semibold text-neutral-800">Tambahkan Arsip Baru</h3>
+              <h3 className="text-base font-medium text-neutral-800">Tambahkan Arsip Baru</h3>
               <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                 <div className="flex flex-col gap-1">
                   <Label>Judul Dokumen</Label>
@@ -81,7 +81,7 @@ export const DocumentPage: React.FC = () => {
                 </div>
                 <div className="flex flex-col gap-1">
                   <Label>Tipe Dokumen</Label>
-                  <select className="border border-neutral-300 rounded-md px-3 py-2 text-sm" value={type} onChange={(e) => setType(e.target.value as any)}>
+                  <select className="border border-neutral-300 rounded-sm px-3 py-2 text-sm" value={type} onChange={(e) => setType(e.target.value as any)}>
                     <option value="materi">Materi Pembelajaran</option>
                     <option value="tugas">Tugas / Penugasan</option>
                   </select>
@@ -98,7 +98,7 @@ export const DocumentPage: React.FC = () => {
                   <Label>Isi Dokumen / Teks Tugas</Label>
                   <Textarea rows={5} placeholder="Ketik detail materi atau rincian instruksi tugas..." value={content} onChange={(e) => setContent(e.target.value)} required />
                 </div>
-                <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-white" disabled={createMutation.isPending}>
+                <Button type="submit" className="w-full bg-neutral-900 hover:bg-neutral-800 text-white" disabled={createMutation.isPending}>
                   {createMutation.isPending ? "Simpan..." : "Simpan Arsip"}
                 </Button>
               </form>
@@ -107,7 +107,7 @@ export const DocumentPage: React.FC = () => {
 
           {/* Document List */}
           <div className="flex flex-col gap-4">
-            <h3 className="text-base font-semibold text-neutral-900">Daftar Dokumen Tersimpan</h3>
+            <h3 className="text-base font-medium text-neutral-950">Daftar Dokumen Tersimpan</h3>
             {isLoading ? (
               <div className="flex flex-col gap-2 p-4">
                 <Skeleton className="w-full h-10" />
@@ -115,8 +115,8 @@ export const DocumentPage: React.FC = () => {
                 <Skeleton className="w-full h-10" />
               </div>
             ) : !documents || documents.length === 0 ? (
-              <div className="text-center py-8 border-2 border-dashed border-neutral-200 rounded-md">
-                <p className="text-base font-semibold text-neutral-600">Belum Ada Dokumen</p>
+              <div className="text-center py-8 border-2 border-dashed border-neutral-200 rounded-sm">
+                <p className="text-base font-medium text-neutral-600">Belum Ada Dokumen</p>
                 <p className="text-xs text-neutral-500 max-w-sm mx-auto mt-1">
                   Gunakan form di atas untuk menyimpan dokumentasi materi atau tugas.
                 </p>
@@ -126,7 +126,7 @@ export const DocumentPage: React.FC = () => {
                 {documents.map((doc: any) => (
                   <Card
                     key={doc.id}
-                    className={`cursor-pointer transition-colors ${selectedDoc?.id === doc.id ? "border-primary bg-primary/8" : "hover:border-neutral-300"}`}
+                    className={`cursor-pointer transition-colors ${selectedDoc?.id === doc.id ? "border-neutral-900 bg-neutral-100" : "hover:border-neutral-300"}`}
                     onClick={() => setSelectedDoc(doc)}
                   >
                     <CardContent className="pt-4 flex flex-col gap-2">
@@ -156,7 +156,7 @@ export const DocumentPage: React.FC = () => {
             )}
 
             {selectedDoc && (
-              <Card className="border border-primary/30 mt-6">
+              <Card className="border border-neutral-300 mt-6">
                 <CardContent className="pt-5 flex flex-col gap-4">
                   <div className="border-b pb-3">
                     <div className="flex items-center gap-2">
@@ -167,7 +167,7 @@ export const DocumentPage: React.FC = () => {
                     </div>
                     <h2 className="text-lg font-bold text-neutral-900 mt-1">{selectedDoc.title}</h2>
                   </div>
-                  <div className="bg-neutral-50 p-4 border border-neutral-200 rounded whitespace-pre-line">
+                  <div className="bg-neutral-50 p-4 border border-neutral-200 rounded-sm whitespace-pre-line">
                     <p className="text-sm text-neutral-700 leading-relaxed">{selectedDoc.content}</p>
                   </div>
                   <div className="flex justify-end">

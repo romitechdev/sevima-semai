@@ -71,17 +71,17 @@ export const DashboardPage: React.FC = () => {
       <div className="flex flex-col gap-8">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
           <div>
-            <p className="text-sm text-neutral-500">{greeting}</p>
-            <h1 className="text-2xl font-semibold tracking-tight text-neutral-900 mt-1">
+            <p className="text-xs text-neutral-400">{greeting}</p>
+            <h1 className="text-xl font-medium tracking-tight text-neutral-950 mt-2">
               Selamat datang, {teacherName?.split(" ")[0] || "Guru"}
             </h1>
           </div>
-          <Button className="bg-primary hover:bg-primary/90 text-primary-foreground w-full sm:w-auto" onClick={() => navigate("/create")}>
+          <Button className="bg-neutral-900 hover:bg-neutral-800 text-white rounded-sm w-full sm:w-auto" onClick={() => navigate("/create")}>
             Buat Kuis Formatif
           </Button>
         </div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-neutral-200 rounded-xl ring-1 ring-neutral-200 overflow-hidden">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-neutral-200 border border-neutral-200 overflow-hidden">
           {[
             { label: "Kuis Formatif", value: totalQuizzes, desc: "kuis terdaftar" },
             { label: "Siswa Terdaftar", value: totalStudentsCount, desc: "dalam gradebook" },
@@ -89,8 +89,8 @@ export const DashboardPage: React.FC = () => {
             { label: "Rekap Nilai", value: totalGradesCount, desc: "nilai tersimpan" },
           ].map((m) => (
             <div key={m.label} className="bg-white p-4 sm:p-5">
-              <p className="text-xs font-medium text-neutral-500">{m.label}</p>
-              <p className="text-2xl sm:text-3xl font-semibold tracking-tight text-neutral-900 mt-2 tabular-nums">{m.value}</p>
+              <p className="text-xs uppercase tracking-wider text-neutral-400 select-none">{m.label}</p>
+              <p className="text-2xl sm:text-3xl font-medium tracking-tight text-neutral-950 mt-2 tabular-nums">{m.value}</p>
               <p className="text-xs text-neutral-400 mt-1">{m.desc}</p>
             </div>
           ))}
@@ -100,8 +100,8 @@ export const DashboardPage: React.FC = () => {
           <CardContent className="pt-5 flex flex-col gap-4">
             <div className="flex items-center justify-between flex-wrap gap-3">
               <div>
-                <h3 className="text-base font-semibold text-neutral-900">Instruksi AI</h3>
-                <p className="text-sm text-neutral-500 mt-0.5">Ketik perintah untuk membuat kuis, materi, atau arsip kelas.</p>
+                <h3 className="text-xs uppercase tracking-wider text-neutral-400 select-none">Instruksi AI</h3>
+                <p className="text-sm text-neutral-500 mt-1.5">Ketik perintah untuk membuat kuis, materi, atau arsip kelas.</p>
               </div>
               <Badge variant="secondary" className="font-mono">Agent</Badge>
             </div>
@@ -114,24 +114,24 @@ export const DashboardPage: React.FC = () => {
                   onChange={(e) => setAgentInput(e.target.value)}
                   className="flex-1"
                 />
-                <Button type="submit" className="bg-primary hover:bg-primary/90 text-primary-foreground sm:w-auto" disabled={executeAgentMutation.isPending}>
+                <Button type="submit" className="bg-neutral-900 hover:bg-neutral-800 text-white sm:w-auto" disabled={executeAgentMutation.isPending}>
                   {executeAgentMutation.isPending ? "Memproses..." : "Jalankan"}
                 </Button>
               </div>
             </form>
             {agentError && <Alert variant="destructive"><AlertDescription>{agentError}</AlertDescription></Alert>}
             {agentResult && (
-              <div className="bg-neutral-50 p-4 border border-neutral-200 rounded-lg flex flex-col gap-3">
+              <div className="bg-neutral-50 p-4 border border-neutral-200 rounded-sm flex flex-col gap-3">
                 <div className="flex items-center gap-2">
                   <Badge variant="secondary" className="font-mono">{agentResult.actionType}</Badge>
-                  <p className="text-sm font-semibold text-neutral-900">{agentResult.title}</p>
+                  <p className="text-sm font-medium text-neutral-950">{agentResult.title}</p>
                 </div>
                 <p className="text-sm text-neutral-600">{agentResult.summary}</p>
-                <div className="bg-white p-3 border border-neutral-200 rounded-md text-sm text-neutral-700 whitespace-pre-line leading-relaxed">
+                <div className="bg-white p-3 border border-neutral-200 rounded-sm text-sm text-neutral-700 whitespace-pre-line leading-relaxed">
                   {agentResult.details}
                 </div>
                 {agentResult.suggestedTargetUrl && agentResult.actionType !== "ADVISE" && (
-                  <Button size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground self-start" onClick={handleApplyAgentAction}>
+                  <Button size="sm" className="bg-neutral-900 hover:bg-neutral-800 text-white self-start" onClick={handleApplyAgentAction}>
                     Buka Modul Terkait
                   </Button>
                 )}
@@ -144,10 +144,10 @@ export const DashboardPage: React.FC = () => {
           <CardContent className="pt-5 flex flex-col gap-4">
             <div className="flex items-center justify-between flex-wrap gap-3">
               <div>
-                <h3 className="text-base font-semibold text-neutral-900">Kuis Formatif</h3>
-                <p className="text-sm text-neutral-500 mt-0.5">Kuis terbaru beserta jumlah siswa yang mengumpulkan.</p>
+                <h3 className="text-xs uppercase tracking-wider text-neutral-400 select-none">Kuis Formatif</h3>
+                <p className="text-sm text-neutral-500 mt-1.5">Kuis terbaru beserta jumlah siswa yang mengumpulkan.</p>
               </div>
-              <Button variant="outline" size="sm" onClick={() => navigate("/create")}>
+              <Button variant="outline" size="sm" className="rounded-sm" onClick={() => navigate("/create")}>
                 Buat Kuis Baru
               </Button>
             </div>
@@ -159,17 +159,17 @@ export const DashboardPage: React.FC = () => {
                 <Skeleton className="w-full h-16" />
               </div>
             ) : !quizzes || quizzes.length === 0 ? (
-              <div className="text-center py-10 border border-dashed border-neutral-300 rounded-lg">
-                <p className="text-sm font-semibold text-neutral-700">Belum ada kuis</p>
+              <div className="text-center py-10 border border-dashed border-neutral-300">
+                <p className="text-sm font-medium text-neutral-700">Belum ada kuis</p>
                 <p className="text-sm text-neutral-500 max-w-sm mx-auto mt-1">
                   Buat kuis formatif pertama untuk mulai memantau pemahaman siswa secara real-time.
                 </p>
-                <Button size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground mt-4" onClick={() => navigate("/create")}>
+                <Button size="sm" className="bg-neutral-900 hover:bg-neutral-800 text-white mt-4 rounded-sm" onClick={() => navigate("/create")}>
                   Buat Kuis Pertama
                 </Button>
               </div>
             ) : (
-              <ul className="list-none p-0 m-0 flex flex-col divide-y divide-neutral-100 border border-neutral-200 rounded-lg overflow-hidden">
+              <ul className="list-none p-0 m-0 flex flex-col divide-y divide-neutral-200 border border-neutral-200">
                 {recentQuizzes.map((q) => (
                   <li key={q.id}>
                     <button
@@ -178,8 +178,8 @@ export const DashboardPage: React.FC = () => {
                       aria-label={`Lihat detail kuis ${q.title}`}
                     >
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold text-neutral-900 truncate">{q.title}</p>
-                        <p className="text-xs text-neutral-500 mt-0.5">
+                        <p className="text-sm font-medium text-neutral-950 truncate">{q.title}</p>
+                        <p className="text-xs text-neutral-400 mt-0.5">
                           {q.subject} · {q.gradeLevel} · {q.totalQuestions} soal
                         </p>
                       </div>
