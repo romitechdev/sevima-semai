@@ -32,10 +32,13 @@ export const DashboardPage: React.FC = () => {
 
           <div className="flex items-center gap-3">
             <Button className="bg-purple-600 hover:bg-purple-700" onClick={() => navigate("/material")}>
-              📚 Buat Materi AI
+              📚 Materi AI
+            </Button>
+            <Button className="bg-blue-600 hover:bg-blue-700" onClick={() => navigate("/essay")}>
+              ✍️ Koreksi Esai
             </Button>
             <Button className="bg-emerald-600 hover:bg-emerald-700" onClick={() => navigate("/create")}>
-              + Buat Kuis Formatif
+              + Buat Kuis
             </Button>
             <Button variant="outline" onClick={() => signOut()}>
               Keluar

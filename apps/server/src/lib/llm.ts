@@ -137,3 +137,79 @@ Gunakan Bahasa Indonesia yang komunikatif, baku, dan sesuai dengan pendekatan Ku
 
   return parsed;
 }
+
+export async function evaluateEssayWithLLM(input: {
+  question: string;
+  rubricOrKey: string;
+  studentAnswer: string;
+}): Promise<{
+  score: number;
+  maxScore: number;
+  feedback: string;
+  strengths: string[];
+  improvements: string[];
+  suggestedCorrection: string;
+}> {
+  const apiKey = process.env.OMNIROUTE_API_KEY || "sk-1a2610a1aca72e66-2f1f9d-f1fd9906";
+  const baseUrl = process.env.OMNIROUTE_BASE_URL || "http://10.0.10.223:20128/v1";
+
+  const systemPrompt = `Kamu adalah asisten AI penilai esai & jawaban teks guru di Indonesia. Tugasmu adalah menilai jawaban esai siswa secara obyektif berdasarkan soal dan kunci jawaban/rubrik yang diberikan.
+
+Wajib kembalikan format JSON murni tanpa markdown wrapper, tanpa teks tambahan sebelum/sesudah JSON.
+
+Format JSON:
+{
+  "score": 85,
+  "maxScore": 100,
+  "feedback": "Ulasan singkat dan konstruktif tentang jawaban siswa",
+  "strengths": [
+    "Kelebihan jawaban 1",
+    "Kelebihan jawaban 2"
+  ],
+  "improvements": [
+    "Hal yang perlu ditingkatkan 1"
+  ],
+  "suggestedCorrection": "Saran perbaikan kalimat / jawaban ideal yang lebih akurat"
+}
+
+Gunakan Bahasa Indonesia yang ramah, profesional, dan mendukung pembelajaran siswa.`;
+
+  const userPrompt = `Soal: ${input.question}
+Kunci Jawaban / Rubrik Penilaian: ${input.rubricOrKey}
+Jawaban Siswa: ${input.studentAnswer}
+
+Berikan penilaian, skor 0-100, ulasan, kelebihan, kekurangan, dan jawaban perbaikan.`;
+
+  const response = await fetch(`${baseUrl}/chat/completions`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      model: "agent",
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userPrompt },
+      ],
+      temperature: 0.5,
+    }),
+  });
+
+  if (!response.ok) {
+    const errText = await response.text();
+    throw new Error(`LLM API Error (${response.status}): ${errText}`);
+  }
+
+  const data = (await response.json()) as any;
+  const content = data?.choices?.[0]?.message?.content;
+
+  if (!content) {
+    throw new Error("Respon AI kosong");
+  }
+
+  const cleanJson = content.replace(/```json/g, "").replace(/```/g, "").trim();
+  const parsed = JSON.parse(cleanJson);
+
+  return parsed;
+}
