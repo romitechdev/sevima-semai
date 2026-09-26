@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { trpc } from "../lib/trpc";
+import { useAuth } from "../context/AuthContext";
 import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { Button } from "../components/ui/button";
 
 export const AssessmentPage: React.FC = () => {
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   const [title, setTitle] = useState("");
@@ -14,6 +16,17 @@ export const AssessmentPage: React.FC = () => {
   const [targetGrade, setTargetGrade] = useState("");
   const [notes, setNotes] = useState("");
   const [error, setError] = useState<string | null>(null);
+
+  const [studentNameInput, setStudentNameInput] = useState("");
+  const [scoresMap, setScoresMap] = useState<Record<number, number>>({});
+  const [gradeSavedSuccess, setGradeSavedSuccess] = useState(false);
+
+  const { data: gradebookData } = trpc.gradebook.listByTeacher.useQuery(
+    { teacherId: user?.id || "" },
+    { enabled: !!user }
+  );
+
+  const recordGradeMutation = trpc.gradebook.record.useMutation();
 
   const [result, setResult] = useState<{
     title: string;
@@ -52,8 +65,39 @@ export const AssessmentPage: React.FC = () => {
         notes,
       });
       setResult(res);
+      const initialMap: Record<number, number> = {};
+      res.criteria.forEach((_, idx) => (initialMap[idx] = 3));
+      setScoresMap(initialMap);
     } catch (err: any) {
       setError(err.message || "Gagal menyusun modul penilaian khusus");
+    }
+  };
+
+  const handleSaveStudentGrade = async () => {
+    if (!user || !studentNameInput || !result) return;
+
+    const totalCriteria = result.criteria.length;
+    let earnedPoints = 0;
+    for (let i = 0; i < totalCriteria; i++) {
+      earnedPoints += scoresMap[i] || 3;
+    }
+    const finalScore = Math.round((earnedPoints / (totalCriteria * 4)) * 100);
+
+    try {
+      await recordGradeMutation.mutateAsync({
+        teacherId: user.id,
+        studentName: studentNameInput,
+        sourceType: assessmentType === "P5_KARAKTER" ? "P5" : "UNJUK_KERJA",
+        title: `${result.typeLabel}: ${result.title}`,
+        score: finalScore,
+        maxScore: 100,
+        feedback: `Penilaian Rubrik (${earnedPoints}/${totalCriteria * 4} Poin)`,
+      });
+
+      setGradeSavedSuccess(true);
+      setTimeout(() => setGradeSavedSuccess(false), 3000);
+    } catch (err: any) {
+      alert(err.message || "Gagal mencatat nilai ke Gradebook");
     }
   };
 
@@ -174,25 +218,97 @@ export const AssessmentPage: React.FC = () => {
                       </div>
 
                       <div className="grid grid-cols-1 md:grid-cols-4 gap-2 text-xs">
-                        <div className="p-2.5 bg-emerald-50 border border-emerald-200 rounded">
+                        <button
+                          type="button"
+                          onClick={() => setScoresMap((prev) => ({ ...prev, [i]: 4 }))}
+                          className={`p-2.5 rounded border text-left transition-all ${
+                            scoresMap[i] === 4
+                              ? "bg-emerald-100 border-emerald-500 ring-2 ring-emerald-500 font-semibold"
+                              : "bg-emerald-50 border-emerald-200"
+                          }`}
+                        >
                           <div className="font-bold text-emerald-800 mb-1">Sangat Baik (Skor 4)</div>
                           <div className="text-slate-700">{c.descriptors.sangatBaik}</div>
-                        </div>
-                        <div className="p-2.5 bg-blue-50 border border-blue-200 rounded">
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setScoresMap((prev) => ({ ...prev, [i]: 3 }))}
+                          className={`p-2.5 rounded border text-left transition-all ${
+                            scoresMap[i] === 3
+                              ? "bg-blue-100 border-blue-500 ring-2 ring-blue-500 font-semibold"
+                              : "bg-blue-50 border-blue-200"
+                          }`}
+                        >
                           <div className="font-bold text-blue-800 mb-1">Baik (Skor 3)</div>
                           <div className="text-slate-700">{c.descriptors.baik}</div>
-                        </div>
-                        <div className="p-2.5 bg-amber-50 border border-amber-200 rounded">
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setScoresMap((prev) => ({ ...prev, [i]: 2 }))}
+                          className={`p-2.5 rounded border text-left transition-all ${
+                            scoresMap[i] === 2
+                              ? "bg-amber-100 border-amber-500 ring-2 ring-amber-500 font-semibold"
+                              : "bg-amber-50 border-amber-200"
+                          }`}
+                        >
                           <div className="font-bold text-amber-800 mb-1">Cukup (Skor 2)</div>
                           <div className="text-slate-700">{c.descriptors.cukup}</div>
-                        </div>
-                        <div className="p-2.5 bg-red-50 border border-red-200 rounded">
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setScoresMap((prev) => ({ ...prev, [i]: 1 }))}
+                          className={`p-2.5 rounded border text-left transition-all ${
+                            scoresMap[i] === 1
+                              ? "bg-red-100 border-red-500 ring-2 ring-red-500 font-semibold"
+                              : "bg-red-50 border-red-200"
+                          }`}
+                        >
                           <div className="font-bold text-red-800 mb-1">Perlu Bimbingan (1)</div>
                           <div className="text-slate-700">{c.descriptors.perluBimbingan}</div>
-                        </div>
+                        </button>
                       </div>
                     </div>
                   ))}
+                </div>
+              </div>
+
+              {/* Student Grading Integration Box */}
+              <div className="bg-teal-50/70 p-4 rounded-xl border border-teal-200 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="font-bold text-teal-900 text-sm">
+                    Direct Grading — Penilaian Langsung Ke Siswa
+                  </div>
+                  {gradeSavedSuccess && (
+                    <span className="text-xs bg-emerald-600 text-white px-2.5 py-0.5 rounded font-bold">
+                      ✓ Nilai Terseimpan ke Gradebook!
+                    </span>
+                  )}
+                </div>
+                <div className="flex flex-col md:flex-row gap-3 items-end">
+                  <div className="flex-1 space-y-1 w-full">
+                    <Label htmlFor="studNameInput" className="text-xs">Nama Siswa</Label>
+                    <Input
+                      id="studNameInput"
+                      placeholder="Ketik nama siswa atau pilih dari daftar..."
+                      value={studentNameInput}
+                      onChange={(e) => setStudentNameInput(e.target.value)}
+                      list="students-datalist"
+                      className="bg-white text-sm"
+                    />
+                    <datalist id="students-datalist">
+                      {(gradebookData?.students || []).map((s) => (
+                        <option key={s.studentName} value={s.studentName} />
+                      ))}
+                    </datalist>
+                  </div>
+                  <Button
+                    type="button"
+                    className="bg-teal-600 hover:bg-teal-700 text-white font-bold text-sm h-10"
+                    onClick={handleSaveStudentGrade}
+                    disabled={recordGradeMutation.isPending || !studentNameInput}
+                  >
+                    {recordGradeMutation.isPending ? "Menyimpan..." : "Simpan Nilai Ke Gradebook 🚀"}
+                  </Button>
                 </div>
               </div>
 

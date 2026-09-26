@@ -6,6 +6,7 @@ import { trpc } from "./lib/trpc";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { LoginPage } from "./pages/LoginPage";
 import { DashboardPage } from "./pages/DashboardPage";
+import { LandingPage } from "./pages/LandingPage";
 import { CreateQuizPage } from "./pages/CreateQuizPage";
 import { CreateMaterialPage } from "./pages/CreateMaterialPage";
 import { EssayGraderPage } from "./pages/EssayGraderPage";
@@ -40,7 +41,7 @@ export function App() {
         <AuthProvider>
           <BrowserRouter>
             <Routes>
-              <Route path="/" element={<Navigate to="/dashboard" replace />} />
+              <Route path="/" element={<LandingPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/quiz/:code" element={<TakeQuizPage />} />
               <Route path="/quiz" element={<TakeQuizPage />} />

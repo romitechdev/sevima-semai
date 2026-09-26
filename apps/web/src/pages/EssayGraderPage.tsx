@@ -17,6 +17,11 @@ export const EssayGraderPage: React.FC = () => {
   const [studentName, setStudentName] = useState("");
   const [error, setError] = useState<string | null>(null);
 
+  const { data: gradebookData } = trpc.gradebook.listByTeacher.useQuery(
+    { teacherId: user?.id || "" },
+    { enabled: !!user }
+  );
+
   const [evaluation, setEvaluation] = useState<{
     score: number;
     maxScore: number;
@@ -85,7 +90,13 @@ export const EssayGraderPage: React.FC = () => {
                   placeholder="Contoh: Ahmad Rizky (Isi agar nilai otomatis tercatat ke Gradebook)"
                   value={studentName}
                   onChange={(e) => setStudentName(e.target.value)}
+                  list="students-datalist-essay"
                 />
+                <datalist id="students-datalist-essay">
+                  {(gradebookData?.students || []).map((s) => (
+                    <option key={s.studentName} value={s.studentName} />
+                  ))}
+                </datalist>
               </div>
 
               <div className="space-y-1">
