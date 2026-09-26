@@ -16,6 +16,9 @@ export const CreateQuizPage: React.FC = () => {
   const [gradeLevel, setGradeLevel] = useState("");
   const [error, setError] = useState<string | null>(null);
 
+  const [aiPrompt, setAiPrompt] = useState("");
+  const [showAiModal, setShowAiModal] = useState(false);
+
   const [questions, setQuestions] = useState<
     Array<{ text: string; options: [string, string, string, string]; correctIndex: number }>
   >([
@@ -27,6 +30,30 @@ export const CreateQuizPage: React.FC = () => {
   ]);
 
   const createMutation = trpc.quiz.create.useMutation();
+  const generateAiMutation = trpc.quiz.generateWithAI.useMutation();
+
+  const handleGenerateAI = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!aiPrompt || aiPrompt.trim().length < 5) {
+      setError("Masukkan materi atau topik minimal 5 karakter");
+      return;
+    }
+
+    setError(null);
+    try {
+      const generated = await generateAiMutation.mutateAsync({ prompt: aiPrompt });
+      if (generated.title) setTitle(generated.title);
+      if (generated.subject) setSubject(generated.subject);
+      if (generated.gradeLevel) setGradeLevel(generated.gradeLevel);
+      if (generated.questions && generated.questions.length === 5) {
+        setQuestions(generated.questions);
+      }
+      setShowAiModal(false);
+      setAiPrompt("");
+    } catch (err: any) {
+      setError(err.message || "Gagal membuat kuis otomatis dengan AI");
+    }
+  };
 
   const updateQuestionText = (index: number, text: string) => {
     const updated = [...questions];
@@ -73,15 +100,65 @@ export const CreateQuizPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-slate-50 p-4 md:p-8">
       <div className="max-w-4xl mx-auto space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold text-slate-800">Buat Kuis Formatif Baru</h1>
             <p className="text-slate-500 text-sm">Semai 🌱 — Kuis 5 Soal Cepat Instan</p>
           </div>
-          <Button variant="outline" onClick={() => navigate("/dashboard")}>
-            Kembali ke Dashboard
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              type="button"
+              className="bg-purple-600 hover:bg-purple-700 text-white font-semibold"
+              onClick={() => setShowAiModal(true)}
+            >
+              ✨ Auto-Generate AI
+            </Button>
+            <Button variant="outline" onClick={() => navigate("/dashboard")}>
+              Kembali
+            </Button>
+          </div>
         </div>
+
+        {showAiModal && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+            <Card className="w-full max-w-lg bg-white shadow-xl border-purple-200">
+              <CardHeader>
+                <CardTitle className="text-lg flex items-center gap-2 text-purple-900">
+                  <span>✨</span> Auto-Generate Kuis dengan AI
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-xs text-slate-600">
+                  Masukkan materi pelajaran, rangkuman bab, atau topik spesifik. OmniRoute Agent AI akan membuatkan 5 soal pilihan ganda lengkap dengan opsi & kunci jawaban secara otomatis.
+                </p>
+                <div>
+                  <Label htmlFor="aiPrompt">Materi / Prompt Kuis</Label>
+                  <textarea
+                    id="aiPrompt"
+                    rows={4}
+                    className="w-full mt-1 p-2.5 text-sm border rounded-md border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    placeholder="Contoh: Daur air dan evaporasi untuk kelas 5 SD. Sertakan soal tentang kondensasi dan presipitasi."
+                    value={aiPrompt}
+                    onChange={(e) => setAiPrompt(e.target.value)}
+                  />
+                </div>
+                <div className="flex justify-end gap-2 pt-2">
+                  <Button variant="outline" type="button" onClick={() => setShowAiModal(false)}>
+                    Batal
+                  </Button>
+                  <Button
+                    type="button"
+                    className="bg-purple-600 hover:bg-purple-700"
+                    onClick={handleGenerateAI}
+                    disabled={generateAiMutation.isPending}
+                  >
+                    {generateAiMutation.isPending ? "AI Sedang Membuat Soal..." : "Generate Soal Sekarang 🚀"}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
 
         {error && (
           <div className="p-3 bg-red-50 text-red-600 text-sm rounded-md border border-red-200">

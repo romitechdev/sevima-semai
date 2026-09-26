@@ -2,6 +2,7 @@ import { TRPCError } from "@trpc/server";
 import { publicProcedure, router } from "../lib/trpc.js";
 import { getSupabaseAdmin } from "../lib/supabase.js";
 import { createQuizSchema, submitAnswerSchema, getQuizByCodeSchema } from "@formatiflive/shared";
+import { generateQuizWithLLM } from "../lib/llm.js";
 import { z } from "zod";
 
 function generateCode(): string {
@@ -274,5 +275,19 @@ export const quizRouter = router({
           totalStudents: studentSet.size,
         };
       });
+    }),
+
+  generateWithAI: publicProcedure
+    .input(z.object({ prompt: z.string().min(5) }))
+    .mutation(async ({ input }) => {
+      try {
+        const result = await generateQuizWithLLM(input.prompt);
+        return result;
+      } catch (err: any) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Gagal generate kuis otomatis: ${err.message}`,
+        });
+      }
     }),
 });
