@@ -1,0 +1,21 @@
+{
+  "name": "semai",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=apps/web & npm run dev --workspace=apps/server",
+    "build": "npm run build --workspace=packages/shared && npm run build --workspace=apps/server && npm run build --workspace=apps/web",
+    "lint": "eslint .",
+    "test": "npm run test --workspace=apps/server",
+    "preview": "npm run preview --workspace=apps/web"
+  },
+  "devDependencies": {
+    "eslint": "^9.30.0",
+    "@eslint/js": "^9.30.0",
+    "typescript-eslint": "^8.35.0",
+    "prettier": "^3.6.0"
+  }
+}

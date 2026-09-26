@@ -1,0 +1,26 @@
+{
+  "name": "@formatiflive/server",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@trpc/server": "^11.0.0",
+    "@supabase/supabase-js": "^2.50.0",
+    "zod": "^3.25.0",
+    "superjson": "^2.2.2"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.0",
+    "typescript": "~6.0.2",
+    "@types/node": "^24.13.3",
+    "@vitest/coverage-v8": "^3.2.0",
+    "vitest": "^3.2.0"
+  }
+}
