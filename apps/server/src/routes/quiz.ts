@@ -25,6 +25,20 @@ export const quizRouter = router({
       const supabase = getSupabaseAdmin();
       const code = generateCode();
 
+      // Ensure teacher profile exists
+      const { data: existingProfile } = await supabase.from("profiles").select("id").eq("id", input.teacherId).single();
+      if (!existingProfile) {
+        const { data: authUser } = await supabase.auth.admin.getUserById(input.teacherId);
+        const email = authUser?.user?.email || `guru_${input.teacherId.slice(0, 6)}@semai.id`;
+        const name = authUser?.user?.user_metadata?.name || email.split("@")[0];
+        await supabase.from("profiles").upsert({
+          id: input.teacherId,
+          email,
+          name,
+          role: "teacher",
+        });
+      }
+
       const { data: quiz, error: quizError } = await supabase
         .from("quizzes")
         .insert({
