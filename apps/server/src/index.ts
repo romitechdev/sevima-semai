@@ -4,6 +4,18 @@ import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
 
 const port = Number(process.env.PORT) || 3002;
 const server = createServer(async (req, res) => {
+  // CORS Headers
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, PATCH, DELETE");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, x-trpc-source");
+
+  // Handle CORS Preflight
+  if (req.method === "OPTIONS") {
+    res.writeHead(204);
+    res.end();
+    return;
+  }
+
   const url = new URL(req.url ?? "/", `http://${req.headers.host ?? "localhost"}`);
 
   if (!url.pathname.startsWith("/trpc")) {
@@ -44,7 +56,10 @@ const server = createServer(async (req, res) => {
     req: fetchReq,
   });
 
-  res.writeHead(fetchRes.status, Object.fromEntries(fetchRes.headers));
+  const responseHeaders = Object.fromEntries(fetchRes.headers);
+  responseHeaders["Access-Control-Allow-Origin"] = "*";
+
+  res.writeHead(fetchRes.status, responseHeaders);
   if (fetchRes.body) {
     const reader = fetchRes.body.getReader();
     const pump = () =>

@@ -61,7 +61,8 @@ export const CreateQuizPage: React.FC = () => {
       setShowAiModal(false);
       setAiPrompt("");
     } catch (err: any) {
-      setError(err.message || "Gagal membuat kuis otomatis.");
+      console.error("AI Error:", err);
+      setError(err.message || "Gagal membuat kuis otomatis. Pastikan server tRPC (port 3002) berjalan.");
     }
   };
 

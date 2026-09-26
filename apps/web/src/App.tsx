@@ -25,15 +25,21 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
 
 export function App() {
   const [queryClient] = useState(() => new QueryClient());
-  const [trpcClient] = useState(() =>
-    trpc.createClient({
+  const [trpcClient] = useState(() => {
+    const trpcUrl =
+      import.meta.env.VITE_TRPC_URL ||
+      (typeof window !== "undefined" && window.location.port === "3000"
+        ? `${window.location.protocol}//${window.location.hostname}:3002/trpc`
+        : "/trpc");
+
+    return trpc.createClient({
       links: [
         httpBatchLink({
-          url: "/trpc",
+          url: trpcUrl,
         }),
       ],
-    })
-  );
+    });
+  });
 
   return (
     <trpc.Provider client={trpcClient} queryClient={queryClient}>
