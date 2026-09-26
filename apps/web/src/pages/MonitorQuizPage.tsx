@@ -20,13 +20,54 @@ export const MonitorQuizPage: React.FC = () => {
     { enabled: !!quizId, refetchInterval: 3000 }
   );
 
+  const [wsStatus, setWsStatus] = useState<"connecting" | "connected" | "disconnected">("disconnected");
+  const [lastUpdate, setLastUpdate] = useState<string | null>(null);
+  const [liveFeed, setLiveFeed] = useState<string[]>([]);
+
   useEffect(() => {
     if (!quizId) return;
+
+    // Supabase Realtime channel
     const channel = supabase
       .channel(`realtime-answers-${quizId}`)
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "answers", filter: `quiz_id=eq.${quizId}` }, () => { refetch(); })
       .subscribe();
-    return () => { supabase.removeChannel(channel); };
+
+    // WebSocket for real-time updates
+    const wsProtocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+    const wsHost = window.location.hostname + (window.location.port ? `:${window.location.port}` : "");
+    const ws = new WebSocket(`${wsProtocol}//${wsHost}/ws`);
+
+    ws.onopen = () => {
+      setWsStatus("connected");
+      ws.send(JSON.stringify({ type: "subscribe", quizId }));
+    };
+
+    ws.onmessage = (event) => {
+      try {
+        const msg = JSON.parse(event.data);
+        if (msg.type === "snapshot" || msg.type === "update") {
+          setLastUpdate(new Date().toLocaleTimeString());
+          if (msg.type === "update" && msg.payload?.type === "new_submission") {
+            setLiveFeed((prev) => [
+              `${msg.payload.studentName} mengumpulkan jawaban`,
+              ...prev.slice(0, 9),
+            ]);
+          }
+          refetch();
+        }
+      } catch (err) {
+        console.error("WS parse error:", err);
+      }
+    };
+
+    ws.onclose = () => setWsStatus("disconnected");
+    ws.onerror = () => setWsStatus("disconnected");
+
+    return () => {
+      supabase.removeChannel(channel);
+      ws.close();
+    };
   }, [quizId, refetch]);
 
   if (isLoading || !data) {
@@ -63,6 +104,17 @@ export const MonitorQuizPage: React.FC = () => {
                 <div className="text-center px-4 py-1.5 bg-blue-50 border border-blue-100 rounded">
                   <p className="text-xl font-black text-blue-600">{totalStudents}</p>
                   <p className="text-xs font-semibold text-blue-500">Siswa Submit</p>
+                </div>
+                <div className="text-center px-4 py-1.5 rounded" style={{
+                  backgroundColor: wsStatus === "connected" ? "#dcfce7" : wsStatus === "connecting" ? "#fef9c3" : "#fee2e2",
+                  borderColor: wsStatus === "connected" ? "#bbf7d0" : wsStatus === "connecting" ? "#fef08a" : "#fecaca",
+                }} aria-live="polite">
+                  <p className="text-xs font-bold" style={{ color: wsStatus === "connected" ? "#166534" : wsStatus === "connecting" ? "#854d0e" : "#991b1b" }}>
+                    {wsStatus === "connected" ? "● LIVE" : wsStatus === "connecting" ? "● Connecting" : "● Offline"}
+                  </p>
+                  <p className="text-[10px] text-neutral-500">
+                    {lastUpdate ? `Update: ${lastUpdate}` : "Menunggu data..."}
+                  </p>
                 </div>
                 <Button variant="outline" size="sm" onClick={() => navigate("/dashboard")}>Dashboard</Button>
               </div>
@@ -104,6 +156,23 @@ export const MonitorQuizPage: React.FC = () => {
             </CardContent>
           </Card>
         </div>
+
+        {/* Live Activity Feed */}
+        {liveFeed.length > 0 && (
+          <Card className="border border-blue-200 bg-blue-50">
+            <CardContent className="pt-4 flex flex-col gap-2">
+              <h4 className="text-sm font-semibold text-blue-700" aria-live="polite">Aktivitas Real-time</h4>
+              <div className="flex flex-col gap-1" aria-live="polite">
+                {liveFeed.map((item, idx) => (
+                  <div key={idx} className="flex items-center gap-2 text-xs text-neutral-600">
+                    <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" aria-hidden="true" />
+                    {item}
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* AI Analysis Result */}
         {aiAnalysis && (

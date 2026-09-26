@@ -1,9 +1,12 @@
 import { createServer } from "node:http";
+import { WebSocketServer, WebSocket } from "ws";
 import { appRouter } from "./routes/index.js";
 import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
+import { getSupabaseAdmin } from "./lib/supabase.js";
+import { addClient, removeClient, broadcastQuizUpdate } from "./lib/ws-broadcast.js";
 
 const port = Number(process.env.PORT) || 3002;
-const server = createServer(async (req, res) => {
+const httpServer = createServer(async (req, res) => {
   // CORS Headers
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, PATCH, DELETE");
@@ -77,6 +80,42 @@ const server = createServer(async (req, res) => {
   }
 });
 
-server.listen(port, () => {
+// WebSocket Server for real-time quiz monitoring
+const wss = new WebSocketServer({ server: httpServer, path: "/ws" });
+
+wss.on("connection", (ws) => {
+  ws.on("message", (raw) => {
+    try {
+      const { type, quizId } = JSON.parse(raw.toString());
+
+      if (type === "subscribe" && quizId) {
+        addClient(ws, quizId);
+        ws.send(JSON.stringify({ type: "subscribed", quizId }));
+
+        const supabase = getSupabaseAdmin();
+        supabase
+          .from("answers")
+          .select("*")
+          .eq("quiz_id", quizId)
+          .then(({ data }) => {
+            if (data && data.length > 0) {
+              ws.send(JSON.stringify({ type: "snapshot", quizId, answers: data }));
+            }
+          });
+      }
+    } catch (err) {
+      console.error("WS message error:", err);
+    }
+  });
+
+  ws.on("close", () => removeClient(ws));
+  ws.on("error", () => removeClient(ws));
+});
+
+// Re-export for route modules
+export { broadcastQuizUpdate };
+
+httpServer.listen(port, () => {
   console.log(`tRPC server running on http://localhost:${port}/trpc`);
+  console.log(`WebSocket server running on ws://localhost:${port}/ws`);
 });

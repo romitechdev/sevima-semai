@@ -3,6 +3,7 @@ import { publicProcedure, router } from "../lib/trpc.js";
 import { getSupabaseAdmin } from "../lib/supabase.js";
 import { createQuizSchema, submitAnswerSchema, getQuizByCodeSchema } from "@formatiflive/shared";
 import { generateQuizWithLLM } from "../lib/llm.js";
+import { broadcastQuizUpdate } from "../lib/ws-broadcast.js";
 import { z } from "zod";
 
 function generateCode(): string {
@@ -180,6 +181,14 @@ export const quizRouter = router({
           message: `Failed to submit answers: ${insertError.message}`,
         });
       }
+
+      // Broadcast real-time update to monitor
+      broadcastQuizUpdate(quiz.id, {
+        type: "new_submission",
+        studentName: input.studentName,
+        answers: inserted,
+        timestamp: new Date().toISOString(),
+      });
 
       const totalQuestions = questions.length;
       const correctCount = answersToInsert.filter((a) => a.is_correct).length;
