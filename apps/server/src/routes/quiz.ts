@@ -115,7 +115,7 @@ export const quizRouter = router({
 
       const { data: quiz, error: quizError } = await supabase
         .from("quizzes")
-        .select("id")
+        .select("id, teacher_id")
         .eq("code", input.quizCode.toUpperCase())
         .single();
 
@@ -170,6 +170,22 @@ export const quizRouter = router({
       const totalQuestions = questions.length;
       const correctCount = answersToInsert.filter((a) => a.is_correct).length;
       const score = Math.round((correctCount / totalQuestions) * 100);
+
+      // Auto Integrate to student_grades table
+      try {
+        await supabase.from("student_grades").insert({
+          teacher_id: quiz.teacher_id,
+          student_name: input.studentName,
+          source_type: "KUIS",
+          source_id: quiz.id,
+          title: `Kuis Formatif (Kode: ${input.quizCode.toUpperCase()})`,
+          score,
+          max_score: 100,
+          feedback: `Jawaban benar: ${correctCount} dari ${totalQuestions} soal`,
+        });
+      } catch (_e) {
+        // silent fail if grade recording fails, don't block student submission response
+      }
 
       return {
         submitted: inserted.length,

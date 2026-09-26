@@ -76,6 +76,9 @@ export const DashboardPage: React.FC = () => {
             <Button className="bg-amber-600 hover:bg-amber-700 text-xs md:text-sm" onClick={() => navigate("/documents")}>
               📁 Arsip Dokumen
             </Button>
+            <Button className="bg-indigo-600 hover:bg-indigo-700 text-xs md:text-sm" onClick={() => navigate("/gradebook")}>
+              📈 Gradebook & Rapor
+            </Button>
             <Button className="bg-emerald-600 hover:bg-emerald-700 text-xs md:text-sm" onClick={() => navigate("/create")}>
               + Buat Kuis
             </Button>

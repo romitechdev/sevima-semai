@@ -5,6 +5,7 @@ import { essayRouter } from "./essay.js";
 import { documentRouter } from "./document.js";
 import { agentRouter } from "./agent.js";
 import { assessmentRouter } from "./assessment.js";
+import { gradebookRouter } from "./gradebook.js";
 
 export const healthRouter = router({
   ping: publicProcedure.query(() => ({ ok: true, timestamp: new Date().toISOString() })),
@@ -18,6 +19,7 @@ export const appRouter = router({
   document: documentRouter,
   agent: agentRouter,
   assessment: assessmentRouter,
+  gradebook: gradebookRouter,
 });
 
 export type AppRouter = typeof appRouter;

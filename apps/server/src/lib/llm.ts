@@ -372,3 +372,77 @@ Catatan Tambahan: ${input.notes || "Tidak ada"}`;
 
   return parsed;
 }
+
+export async function generateStudentHolisticReportWithLLM(input: {
+  studentName: string;
+  grades: Array<{
+    source_type: string;
+    title: string;
+    score: number;
+    max_score: number;
+    feedback?: string;
+  }>;
+}): Promise<{
+  studentName: string;
+  overallScore: number;
+  gradeCategory: string;
+  holisticNarrative: string;
+  strengths: string[];
+  recommendations: string[];
+}> {
+  const apiKey = process.env.OMNIROUTE_API_KEY || "sk-1a2610a1aca72e66-2f1f9d-f1fd9906";
+  const baseUrl = process.env.OMNIROUTE_BASE_URL || "http://10.0.10.223:20128/v1";
+
+  const systemPrompt = `Kamu adalah Asisten AI Wali Kelas Kurikulum Merdeka Indonesia. Tugasmu adalah menganalisis seluruh rekap nilai siswa (Kuis, Esai, Penilaian Khusus P5) dan menyusun Narasi Rapor Perkembangan Siswa secara terpadu dan holistik.
+
+Wajib kembalikan format JSON murni tanpa markdown wrapper.
+
+Format JSON:
+{
+  "studentName": "Nama Siswa",
+  "overallScore": 88.5,
+  "gradeCategory": "Sangat Baik" | "Baik" | "Cukup" | "Perlu Bimbingan",
+  "holisticNarrative": "Paragraf narasi rapor resmi Kurikulum Merdeka (3-4 kalimat deskriptif perkembangan karakter & kognitif)",
+  "strengths": ["Poin keunggulan 1", "Poin keunggulan 2"],
+  "recommendations": ["Rekomendasi tindak lanjut 1", "Rekomendasi tindak lanjut 2"]
+}`;
+
+  const gradesSummary = input.grades
+    .map((g) => `- ${g.source_type} (${g.title}): Nilai ${g.score}/${g.max_score} (${g.feedback || "tanpa catatan"})`)
+    .join("\n");
+
+  const userPrompt = `Nama Siswa: ${input.studentName}\nRekap Nilai Terintegrasi:\n${gradesSummary}`;
+
+  const response = await fetch(`${baseUrl}/chat/completions`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      model: "agent",
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userPrompt },
+      ],
+      temperature: 0.6,
+    }),
+  });
+
+  if (!response.ok) {
+    const errText = await response.text();
+    throw new Error(`LLM API Error (${response.status}): ${errText}`);
+  }
+
+  const data = (await response.json()) as any;
+  const content = data?.choices?.[0]?.message?.content;
+
+  if (!content) {
+    throw new Error("Respon AI kosong");
+  }
+
+  const cleanJson = content.replace(/```json/g, "").replace(/```/g, "").trim();
+  const parsed = JSON.parse(cleanJson);
+
+  return parsed;
+}

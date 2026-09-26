@@ -11,6 +11,7 @@ import { CreateMaterialPage } from "./pages/CreateMaterialPage";
 import { EssayGraderPage } from "./pages/EssayGraderPage";
 import { DocumentPage } from "./pages/DocumentPage";
 import { AssessmentPage } from "./pages/AssessmentPage";
+import { GradebookPage } from "./pages/GradebookPage";
 import { TakeQuizPage } from "./pages/TakeQuizPage";
 import { MonitorQuizPage } from "./pages/MonitorQuizPage";
 
@@ -88,6 +89,14 @@ export function App() {
                 element={
                   <ProtectedRoute>
                     <AssessmentPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/gradebook"
+                element={
+                  <ProtectedRoute>
+                    <GradebookPage />
                   </ProtectedRoute>
                 }
               />

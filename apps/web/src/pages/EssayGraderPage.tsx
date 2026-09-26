@@ -1,17 +1,20 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { trpc } from "../lib/trpc";
+import { useAuth } from "../context/AuthContext";
 import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { Button } from "../components/ui/button";
 
 export const EssayGraderPage: React.FC = () => {
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   const [question, setQuestion] = useState("");
   const [rubricOrKey, setRubricOrKey] = useState("");
   const [studentAnswer, setStudentAnswer] = useState("");
+  const [studentName, setStudentName] = useState("");
   const [error, setError] = useState<string | null>(null);
 
   const [evaluation, setEvaluation] = useState<{
@@ -39,6 +42,8 @@ export const EssayGraderPage: React.FC = () => {
         question,
         rubricOrKey,
         studentAnswer,
+        studentName: studentName || undefined,
+        teacherId: user?.id || undefined,
       });
       setEvaluation(res);
     } catch (err: any) {
@@ -73,6 +78,16 @@ export const EssayGraderPage: React.FC = () => {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleEvaluate} className="space-y-4">
+              <div className="space-y-1">
+                <Label htmlFor="sName">Nama Siswa (Opsional - Integrasi ke Gradebook)</Label>
+                <Input
+                  id="sName"
+                  placeholder="Contoh: Ahmad Rizky (Isi agar nilai otomatis tercatat ke Gradebook)"
+                  value={studentName}
+                  onChange={(e) => setStudentName(e.target.value)}
+                />
+              </div>
+
               <div className="space-y-1">
                 <Label htmlFor="question">Pertanyaan / Soal Esai</Label>
                 <Input
