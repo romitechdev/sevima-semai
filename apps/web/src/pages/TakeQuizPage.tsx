@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Label } from "@/components/ui/label";
-import { Wordmark } from "@/components/Wordmark";
 import { PublicHeader } from "../components/PublicHeader";
 
 export const TakeQuizPage: React.FC = () => {
@@ -55,8 +54,8 @@ export const TakeQuizPage: React.FC = () => {
 
   if (submittedResult) {
     return (
-      <div className="min-dvh bg-neutral-50 flex flex-col">
-        <PublicHeader active="/quiz" showLogin={false} />
+      <div className="min-dvh bg-white flex flex-col">
+        <PublicHeader active="/quiz" />
         <main id="main-content" className="flex-1 flex items-center justify-center p-4">
         <Card className="w-full max-w-md" role="status">
           <CardContent className="pt-6 flex flex-col items-center gap-4 text-center">
@@ -83,15 +82,12 @@ export const TakeQuizPage: React.FC = () => {
 
   if (!quizStarted || !quizData) {
     return (
-      <div className="min-dvh bg-neutral-50 flex flex-col">
-        <PublicHeader active="/quiz" showLogin={false} />
+      <div className="min-dvh bg-white flex flex-col">
+        <PublicHeader active="/quiz" />
         <main id="main-content" className="flex-1 flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
           <CardContent className="pt-6 flex flex-col gap-4">
             <div className="flex flex-col items-center gap-1">
-              <span className="text-2xl">
-                <Wordmark />
-              </span>
               <h1 className="text-lg font-medium text-neutral-950">Masuk Kuis Formatif</h1>
             </div>
             <form onSubmit={handleStartQuiz} className="flex flex-col gap-4" aria-label="Form masuk kuis" noValidate>
@@ -137,8 +133,8 @@ export const TakeQuizPage: React.FC = () => {
   }
 
   return (
-    <div className="min-dvh bg-neutral-50 flex flex-col">
-      <PublicHeader active="/quiz" showLogin={false} />
+    <div className="min-dvh bg-white flex flex-col">
+      <PublicHeader active="/quiz" />
       <main id="main-content" className="flex-1 p-4">
       <div className="max-w-2xl mx-auto flex flex-col gap-6">
         {/* Quiz Header */}

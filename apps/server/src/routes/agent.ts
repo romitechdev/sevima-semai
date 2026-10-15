@@ -1,6 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import { publicProcedure, router } from "../lib/trpc.js";
-import { runAgentCommandWithLLM } from "../lib/llm.js";
+import { runAgentCommandWithLLM, llmErrorMessage } from "../lib/llm.js";
 import { z } from "zod";
 
 export const agentRouter = router({
@@ -11,10 +11,8 @@ export const agentRouter = router({
         const result = await runAgentCommandWithLLM(input.command);
         return result;
       } catch (err: any) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: `Gagal menjalankan perintah Agent OS: ${err.message}`,
-        });
+        const { code, message } = llmErrorMessage("Gagal menjalankan perintah Agent OS", err);
+        throw new TRPCError({ code, message });
       }
     }),
 });

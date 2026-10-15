@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { trpc } from "../lib/trpc";
 import { useAuth } from "../context/AuthContext";
 import { DashboardLayout } from "../components/DashboardLayout";
@@ -10,13 +10,68 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 
+interface AgentState {
+  actionType: string;
+  title: string;
+  summary: string;
+  details: string;
+  actionPayload: any;
+}
+
+function readAgentState(): AgentState | null {
+  try {
+    const raw = sessionStorage.getItem("semai_agent_result");
+    if (!raw) return null;
+    return JSON.parse(raw) as AgentState;
+  } catch {
+    return null;
+  }
+}
+
 export const CreateMaterialPage: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuth();
   const [topic, setTopic] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState<any | null>(null);
   const [copied, setCopied] = useState(false);
+  const [agentInfo, setAgentInfo] = useState<AgentState | null>(null);
+
+  useEffect(() => {
+    const state = location.state as {
+      initialTopic?: string;
+      subject?: string;
+      gradeLevel?: string;
+      agentTitle?: string;
+      agentSummary?: string;
+      agentDetails?: string;
+    } | null;
+
+    if (state?.initialTopic) {
+      setTopic(state.initialTopic);
+      if (state.agentTitle) {
+        setAgentInfo({
+          actionType: "CREATE_MATERIAL",
+          title: state.agentTitle,
+          summary: state.agentSummary || "",
+          details: state.agentDetails || "",
+          actionPayload: {
+            topic: state.initialTopic,
+            subject: state.subject,
+            gradeLevel: state.gradeLevel,
+          },
+        });
+      }
+    } else {
+      const stored = readAgentState();
+      if (stored?.actionType === "CREATE_MATERIAL") {
+        const p = stored.actionPayload || {};
+        if (p.topic) setTopic(p.topic);
+        setAgentInfo(stored);
+      }
+    }
+  }, [location.state]);
 
   const generateMutation = trpc.material.generate.useMutation();
   const { refetch: refetchList } = trpc.material.listByTeacher.useQuery(
@@ -38,6 +93,7 @@ export const CreateMaterialPage: React.FC = () => {
       setSaved(result);
       refetchList();
       setTopic("");
+      sessionStorage.removeItem("semai_agent_result");
     } catch (err: any) {
       setError(err.message || "Gagal membuat materi pembelajaran");
     }
@@ -77,6 +133,30 @@ export const CreateMaterialPage: React.FC = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Agent result banner */}
+        {agentInfo && (
+          <Card className="border-neutral-900 bg-neutral-50">
+            <CardContent className="pt-4 flex flex-col gap-2">
+              <div className="flex items-center gap-2">
+                <Badge variant="secondary" className="font-mono">Agent</Badge>
+                <p className="text-sm font-medium text-neutral-950">{agentInfo.title}</p>
+              </div>
+              {agentInfo.summary && <p className="text-xs text-neutral-600">{agentInfo.summary}</p>}
+              <Button
+                size="sm"
+                variant="outline"
+                className="rounded-sm text-xs self-start"
+                onClick={() => {
+                  setAgentInfo(null);
+                  sessionStorage.removeItem("semai_agent_result");
+                }}
+              >
+                Tutup Info Agent
+              </Button>
+            </CardContent>
+          </Card>
+        )}
 
         {error && <Alert variant="destructive"><AlertDescription>{error}</AlertDescription></Alert>}
 

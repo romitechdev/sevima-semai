@@ -1,7 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { publicProcedure, router } from "../lib/trpc.js";
 import { getSupabaseAdmin } from "../lib/supabase.js";
-import { evaluateEssayWithLLM } from "../lib/llm.js";
+import { evaluateEssayWithLLM, llmErrorMessage } from "../lib/llm.js";
 import { z } from "zod";
 
 export const essayRouter = router({
@@ -34,10 +34,8 @@ export const essayRouter = router({
 
         return result;
       } catch (err: any) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: `Gagal menilai jawaban esai: ${err.message}`,
-        });
+        const { code, message } = llmErrorMessage("Gagal menilai jawaban esai", err);
+        throw new TRPCError({ code, message });
       }
     }),
 });

@@ -31,7 +31,7 @@ const q2id = "aaaaaaaa-5555-6666-7777-888888888888";
 
 function createMockChain(overrides: Record<string, any> = {}) {
   const chain: Record<string, any> = {};
-  const methods = ["eq", "single", "order", "select", "insert", "upsert", "delete", "maybeSingle"];
+  const methods = ["eq", "in", "single", "order", "select", "insert", "upsert", "delete", "maybeSingle"];
   for (const m of methods) {
     chain[m] = vi.fn().mockReturnValue(chain);
   }
@@ -123,13 +123,25 @@ describe("quizRouter", () => {
     const quizzesData = [
       {
         id: quizId, title: "Quiz A", subject: "Matematika", grade_level: "7", code: "AAA111", created_at: new Date().toISOString(),
-        questions: [{ count: 5 }],
-        answers: [{ student_name: "Budi" }, { student_name: "Siti" }],
       },
+    ];
+    const questionRows = [
+      { id: q1id, quiz_id: quizId },
+      { id: q2id, quiz_id: quizId },
+      { id: "aaaaaaaa-9999-2222-3333-444444444444", quiz_id: quizId },
+      { id: "aaaaaaaa-9999-2222-3333-555555555555", quiz_id: quizId },
+      { id: "aaaaaaaa-9999-2222-3333-666666666666", quiz_id: quizId },
+    ];
+    const answerRows = [
+      { quiz_id: quizId, student_name: "Budi" },
+      { quiz_id: quizId, student_name: "Siti" },
+      { quiz_id: quizId, student_name: "Budi" },
     ];
 
     const c1 = createMockChain({ order: { data: quizzesData, error: null } });
-    mockFromSequence(c1);
+    const c2 = createMockChain({ in: { data: questionRows, error: null } });
+    const c3 = createMockChain({ in: { data: answerRows, error: null } });
+    mockFromSequence(c1, c2, c3);
 
     const caller = appRouter.createCaller({} as any);
     const res = await caller.quiz.listByTeacher({ teacherId });

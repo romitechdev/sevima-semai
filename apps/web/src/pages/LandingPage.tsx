@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import { trpc } from "../lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -10,7 +8,6 @@ import { PublicHeader } from "../components/PublicHeader";
 
 export const LandingPage: React.FC = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
   const [code, setCode] = useState("");
 
   const handleJoinQuiz = (e: React.FormEvent) => {
@@ -18,8 +15,6 @@ export const LandingPage: React.FC = () => {
     if (!code) return;
     navigate(`/quiz/${code.trim().toUpperCase()}`);
   };
-
-  const { data: sharedMaterials } = trpc.material.listShared.useQuery();
 
   return (
     <div className="min-dvh bg-white text-neutral-900 flex flex-col">
@@ -101,28 +96,9 @@ export const LandingPage: React.FC = () => {
                     Bahan ajar yang dibagikan pengajar, tanpa perlu kode.
                   </p>
                 </div>
-                <div className="pt-3 flex flex-col gap-3">
-                  {sharedMaterials && sharedMaterials.length > 0 ? (
-                    <ul className="list-none p-0 m-0 flex flex-col divide-y divide-neutral-100 border border-neutral-200 max-h-48 overflow-y-auto">
-                      {sharedMaterials.slice(0, 5).map((m: any) => (
-                        <li key={m.id}>
-                          <button
-                            onClick={() => navigate("/materi")}
-                            className="w-full text-left px-3 py-2.5 hover:bg-neutral-50 transition-colors"
-                          >
-                            <p className="text-sm font-medium text-neutral-950 truncate">{m.title}</p>
-                            <p className="text-xs text-neutral-400 mt-0.5">{m.subject} · {m.grade_level}</p>
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p className="text-xs text-neutral-400 py-2">Belum ada materi dibagikan.</p>
-                  )}
-                  <Button variant="outline" className="w-full rounded-sm" onClick={() => navigate("/materi")}>
-                    Lihat Semua Materi
-                  </Button>
-                </div>
+                <Button variant="outline" className="w-full rounded-sm mt-3" onClick={() => navigate("/materi")}>
+                  Lihat Semua Materi
+                </Button>
               </div>
             </CardContent>
           </Card>

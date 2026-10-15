@@ -18,6 +18,10 @@ vi.mock("../src/lib/llm.js", () => ({
   evaluateEssayWithLLM: vi.fn(),
   runAgentCommandWithLLM: vi.fn(),
   generateStudentHolisticReportWithLLM: vi.fn(),
+  llmErrorMessage: (prefix: string, err: any) => ({
+    code: "INTERNAL_SERVER_ERROR",
+    message: `${prefix}: ${err?.message || ""}`,
+  }),
 }));
 
 import { appRouter } from "../src/routes/index.js";

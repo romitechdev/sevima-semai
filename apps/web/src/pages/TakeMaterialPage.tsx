@@ -1,19 +1,17 @@
-import React, { useState } from "react";
+import React from "react";
+import { Link } from "react-router-dom";
 import { trpc } from "../lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PublicHeader } from "../components/PublicHeader";
-import { MaterialDialog } from "../components/MaterialDialog";
 
 export const TakeMaterialPage: React.FC = () => {
-  const [selected, setSelected] = useState<any | null>(null);
-
   const { data: materials, isLoading } = trpc.material.listShared.useQuery();
 
   return (
-    <div className="min-dvh bg-neutral-50 flex flex-col">
-      <PublicHeader active="/materi" showLogin={false} />
+    <div className="min-h-dvh bg-neutral-50 flex flex-col">
+      <PublicHeader active="/materi" />
       <main id="main-content" className="flex-1 p-4">
         <div className="max-w-3xl mx-auto flex flex-col gap-6">
           <div>
@@ -44,10 +42,9 @@ export const TakeMaterialPage: React.FC = () => {
               {materials.map((m: any) => (
                 <Card key={m.id}>
                   <CardContent className="pt-4">
-                    <button
-                      onClick={() => setSelected(m)}
-                      className="w-full text-left flex items-center gap-4 group"
-                      aria-label={`Baca materi ${m.title}`}
+                    <Link
+                      to={`/materi/${m.id}`}
+                      className="w-full flex items-center gap-4 group"
                     >
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-neutral-950 truncate group-hover:underline underline-offset-2">
@@ -59,7 +56,7 @@ export const TakeMaterialPage: React.FC = () => {
                         </p>
                       </div>
                       <span className="text-xs text-neutral-400 flex-shrink-0">Baca →</span>
-                    </button>
+                    </Link>
                   </CardContent>
                 </Card>
               ))}
@@ -67,32 +64,6 @@ export const TakeMaterialPage: React.FC = () => {
           )}
         </div>
       </main>
-
-      {selected && (
-        <MaterialDetail materialId={selected.id} open onOpenChange={(o) => !o && setSelected(null)} />
-      )}
     </div>
   );
-};
-
-const MaterialDetail: React.FC<{
-  materialId: string;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-}> = ({ materialId, open, onOpenChange }) => {
-  const { data: material, isLoading } = trpc.material.getById.useQuery(
-    { materialId },
-    { enabled: open }
-  );
-
-  if (isLoading || !material) {
-    return (
-      <MaterialDialog
-        material={{ id: materialId, title: "Memuat...", subject: "", grade_level: "", content: {}, created_at: new Date().toISOString() }}
-        open={open}
-        onOpenChange={onOpenChange}
-      />
-    );
-  }
-  return <MaterialDialog material={material} open={open} onOpenChange={onOpenChange} />;
 };

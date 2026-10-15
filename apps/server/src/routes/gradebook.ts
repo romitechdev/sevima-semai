@@ -1,7 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { publicProcedure, router } from "../lib/trpc.js";
 import { getSupabaseAdmin } from "../lib/supabase.js";
-import { generateStudentHolisticReportWithLLM } from "../lib/llm.js";
+import { generateStudentHolisticReportWithLLM, llmErrorMessage } from "../lib/llm.js";
 import { z } from "zod";
 
 export const gradebookRouter = router({
@@ -128,10 +128,8 @@ export const gradebookRouter = router({
         });
         return report;
       } catch (err: any) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: `Gagal menyusun narasi rapor AI: ${err.message}`,
-        });
+        const { code, message } = llmErrorMessage("Gagal menyusun narasi rapor AI", err);
+        throw new TRPCError({ code, message });
       }
     }),
 

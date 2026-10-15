@@ -50,7 +50,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
 
   return (
     <div className="min-dvh bg-neutral-50 text-neutral-900 flex flex-col w-full">
-      <header className="h-16 bg-white border-b border-neutral-200 px-4 sm:px-6 flex items-center justify-between sticky top-0 z-30 w-full">
+      <header className="h-14 bg-white/90 backdrop-blur border-b border-neutral-200 px-4 sm:px-6 flex items-center justify-between sticky top-0 z-50 w-full">
         <div className="flex items-center gap-3">
           <button
             className="p-2 rounded-sm hover:bg-neutral-100 text-neutral-600 transition-colors flex-shrink-0"
@@ -90,15 +90,15 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
             "bg-white border-r border-neutral-200 flex flex-col justify-between flex-shrink-0 z-30",
             isMobile
               ? cn(
-                  "fixed top-16 left-0 sidebar-transition",
+                  "fixed top-14 left-0 sidebar-transition",
                   isDrawerOpen ? "w-64 p-3 shadow-xl" : "w-0 p-0 overflow-hidden"
                 )
               : cn(
-                  "sticky top-16 sidebar-transition",
+                  "sticky top-14 sidebar-transition",
                   sidebarOpen ? "w-60 p-3" : "w-0 p-0 overflow-hidden"
                 )
           )}
-          style={{ height: "calc(100dvh - 4rem)" }}
+          style={{ height: "calc(100dvh - 3.5rem)" }}
           aria-label="Navigasi utama"
           aria-hidden={isMobile && !sidebarOpen}
         >

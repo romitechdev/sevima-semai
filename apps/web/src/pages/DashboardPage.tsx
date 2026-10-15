@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { trpc } from "../lib/trpc";
 import { useAuth } from "../context/AuthContext";
 import { DashboardLayout } from "../components/DashboardLayout";
@@ -25,6 +26,7 @@ interface QuizRow {
 
 export const DashboardPage: React.FC = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   const [agentInput, setAgentInput] = useState("");
   const [agentResult, setAgentResult] = useState<any | null>(null);
@@ -68,12 +70,53 @@ export const DashboardPage: React.FC = () => {
 
   const handleApplyAgentAction = () => {
     if (!agentResult) return;
+    const payload = agentResult.actionPayload || {};
+    const agentState = {
+      actionType: agentResult.actionType,
+      title: agentResult.title,
+      summary: agentResult.summary,
+      details: agentResult.details,
+      actionPayload: payload,
+    };
+    sessionStorage.setItem("semai_agent_result", JSON.stringify(agentState));
     if (agentResult.actionType === "CREATE_QUIZ") {
-      window.location.href = "/create";
+      navigate("/create", {
+        state: {
+          initialPrompt: payload.promptText || payload.topic || "",
+          numQuestions: payload.numQuestions,
+          subject: payload.subject,
+          gradeLevel: payload.gradeLevel,
+          agentTitle: agentResult.title,
+          agentSummary: agentResult.summary,
+          agentDetails: agentResult.details,
+        },
+      });
     } else if (agentResult.actionType === "CREATE_MATERIAL") {
-      window.location.href = "/material";
+      navigate("/material", {
+        state: {
+          initialTopic: payload.topic || "",
+          subject: payload.subject,
+          gradeLevel: payload.gradeLevel,
+          agentTitle: agentResult.title,
+          agentSummary: agentResult.summary,
+          agentDetails: agentResult.details,
+        },
+      });
     } else if (agentResult.actionType === "DOCU_NOTE") {
-      window.location.href = "/documents";
+      navigate("/documents", {
+        state: {
+          initialDoc: {
+            title: payload.title || agentResult.title || "",
+            type: payload.type || "materi",
+            subject: payload.subject || "",
+            gradeLevel: payload.gradeLevel || "",
+            content: payload.content || agentResult.details || "",
+          },
+          agentTitle: agentResult.title,
+          agentSummary: agentResult.summary,
+          agentDetails: agentResult.details,
+        },
+      });
     }
   };
 
@@ -185,9 +228,20 @@ export const DashboardPage: React.FC = () => {
                   {agentResult.details}
                 </div>
                 {agentResult.suggestedTargetUrl && agentResult.actionType !== "ADVISE" && (
-                  <Button size="sm" className="bg-neutral-900 hover:bg-neutral-800 text-white self-start rounded-sm" onClick={handleApplyAgentAction}>
-                    Buka Modul Terkait
-                  </Button>
+                  <>
+                    <Button size="sm" className="bg-neutral-900 hover:bg-neutral-800 text-white self-start rounded-sm" onClick={handleApplyAgentAction}>
+                      {agentResult.actionType === "CREATE_QUIZ" && "Buka Kuis (Form Terisi Otomatis)"}
+                      {agentResult.actionType === "CREATE_MATERIAL" && "Buka Materi (Topik Terisi Otomatis)"}
+                      {agentResult.actionType === "DOCU_NOTE" && "Buka Arsip (Form Terisi Otomatis)"}
+                    </Button>
+                    {agentResult.actionPayload?.topic && (
+                      <p className="text-xs text-neutral-500">
+                        Topik terdeteksi: <span className="font-medium text-neutral-700">{agentResult.actionPayload.topic}</span>
+                        {agentResult.actionPayload.numQuestions ? ` · ${agentResult.actionPayload.numQuestions} soal` : ""}
+                        {agentResult.actionPayload.gradeLevel ? ` · ${agentResult.actionPayload.gradeLevel}` : ""}
+                      </p>
+                    )}
+                  </>
                 )}
               </div>
             )}

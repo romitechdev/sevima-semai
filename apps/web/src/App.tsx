@@ -16,6 +16,7 @@ import { DocumentPage } from "./pages/DocumentPage";
 import { GradebookPage } from "./pages/GradebookPage";
 import { TakeQuizPage } from "./pages/TakeQuizPage";
 import { TakeMaterialPage } from "./pages/TakeMaterialPage";
+import { MaterialDetailPage } from "./pages/MaterialDetailPage";
 import { MonitorQuizPage } from "./pages/MonitorQuizPage";
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -53,6 +54,7 @@ export function App() {
               <Route path="/quiz/:code" element={<TakeQuizPage />} />
               <Route path="/quiz" element={<TakeQuizPage />} />
               <Route path="/materi" element={<TakeMaterialPage />} />
+              <Route path="/materi/:materialId" element={<MaterialDetailPage />} />
               <Route
                 path="/dashboard"
                 element={

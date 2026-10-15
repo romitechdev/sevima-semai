@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { trpc } from "../lib/trpc";
 import { useAuth } from "../context/AuthContext";
 import { DashboardLayout } from "../components/DashboardLayout";
@@ -12,9 +12,28 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Label } from "@/components/ui/label";
 
+interface AgentState {
+  actionType: string;
+  title: string;
+  summary: string;
+  details: string;
+  actionPayload: any;
+}
+
+function readAgentState(): AgentState | null {
+  try {
+    const raw = sessionStorage.getItem("semai_agent_result");
+    if (!raw) return null;
+    return JSON.parse(raw) as AgentState;
+  } catch {
+    return null;
+  }
+}
+
 export const DocumentPage: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [title, setTitle] = useState("");
   const [type, setType] = useState<"materi" | "tugas">("materi");
@@ -23,6 +42,50 @@ export const DocumentPage: React.FC = () => {
   const [content, setContent] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [selectedDoc, setSelectedDoc] = useState<any | null>(null);
+  const [agentInfo, setAgentInfo] = useState<AgentState | null>(null);
+
+  useEffect(() => {
+    const state = location.state as {
+      initialDoc?: {
+        title?: string;
+        type?: "materi" | "tugas";
+        subject?: string;
+        gradeLevel?: string;
+        content?: string;
+      };
+      agentTitle?: string;
+      agentSummary?: string;
+      agentDetails?: string;
+    } | null;
+
+    if (state?.initialDoc) {
+      if (state.initialDoc.title) setTitle(state.initialDoc.title);
+      if (state.initialDoc.type) setType(state.initialDoc.type);
+      if (state.initialDoc.subject) setSubject(state.initialDoc.subject);
+      if (state.initialDoc.gradeLevel) setGradeLevel(state.initialDoc.gradeLevel);
+      if (state.initialDoc.content) setContent(state.initialDoc.content);
+      if (state.agentTitle) {
+        setAgentInfo({
+          actionType: "DOCU_NOTE",
+          title: state.agentTitle,
+          summary: state.agentSummary || "",
+          details: state.agentDetails || "",
+          actionPayload: state.initialDoc,
+        });
+      }
+    } else {
+      const stored = readAgentState();
+      if (stored?.actionType === "DOCU_NOTE") {
+        const p = stored.actionPayload || {};
+        if (p.title) setTitle(p.title);
+        if (p.type) setType(p.type);
+        if (p.subject) setSubject(p.subject);
+        if (p.gradeLevel) setGradeLevel(p.gradeLevel);
+        if (p.content) setContent(p.content);
+        setAgentInfo(stored);
+      }
+    }
+  }, [location.state]);
 
   const { data: documents, isLoading, refetch } = trpc.document.listByTeacher.useQuery(
     { teacherId: user?.id || "" }, { enabled: !!user }
@@ -38,6 +101,7 @@ export const DocumentPage: React.FC = () => {
     try {
       await createMutation.mutateAsync({ teacherId: user.id, title, type, subject, gradeLevel, content });
       setTitle(""); setSubject(""); setGradeLevel(""); setContent("");
+      sessionStorage.removeItem("semai_agent_result");
       refetch();
     } catch (err: any) { setError(err.message || "Gagal menyimpan dokumentasi"); }
   };
@@ -66,6 +130,30 @@ export const DocumentPage: React.FC = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Agent result banner */}
+        {agentInfo && (
+          <Card className="border-neutral-900 bg-neutral-50">
+            <CardContent className="pt-4 flex flex-col gap-2">
+              <div className="flex items-center gap-2">
+                <Badge variant="secondary" className="font-mono">Agent</Badge>
+                <p className="text-sm font-medium text-neutral-950">{agentInfo.title}</p>
+              </div>
+              {agentInfo.summary && <p className="text-xs text-neutral-600">{agentInfo.summary}</p>}
+              <Button
+                size="sm"
+                variant="outline"
+                className="rounded-sm text-xs self-start"
+                onClick={() => {
+                  setAgentInfo(null);
+                  sessionStorage.removeItem("semai_agent_result");
+                }}
+              >
+                Tutup Info Agent
+              </Button>
+            </CardContent>
+          </Card>
+        )}
 
         {error && <Alert variant="destructive"><AlertDescription>{error}</AlertDescription></Alert>}
 

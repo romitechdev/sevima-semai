@@ -2,7 +2,7 @@ import { TRPCError } from "@trpc/server";
 import { publicProcedure, router } from "../lib/trpc.js";
 import { getSupabaseAdmin } from "../lib/supabase.js";
 import { createQuizSchema, submitAnswerSchema, getQuizByCodeSchema } from "@formatiflive/shared";
-import { generateQuizWithLLM } from "../lib/llm.js";
+import { generateQuizWithLLM, llmErrorMessage } from "../lib/llm.js";
 import { broadcastQuizUpdate } from "../lib/ws-broadcast.js";
 import { z } from "zod";
 
@@ -26,18 +26,30 @@ export const quizRouter = router({
       const supabase = getSupabaseAdmin();
       const code = generateCode();
 
-      // Ensure teacher profile exists
+      // Ensure teacher profile exists (FK target for quizzes.teacher_id)
       const { data: existingProfile } = await supabase.from("profiles").select("id").eq("id", input.teacherId).single();
       if (!existingProfile) {
         const { data: authUser } = await supabase.auth.admin.getUserById(input.teacherId);
-        const email = authUser?.user?.email || `guru_${input.teacherId.slice(0, 6)}@semai.id`;
-        const name = authUser?.user?.user_metadata?.name || email.split("@")[0];
-        await supabase.from("profiles").upsert({
+        if (!authUser?.user) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Pengajar tidak ditemukan. Silakan login ulang.",
+          });
+        }
+        const email = authUser.user.email || `guru_${input.teacherId.slice(0, 6)}@semai.id`;
+        const name = authUser.user.user_metadata?.name || email.split("@")[0];
+        const { error: profileError } = await supabase.from("profiles").upsert({
           id: input.teacherId,
           email,
           name,
           role: "teacher",
         });
+        if (profileError) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: `Gagal menyiapkan profil pengajar: ${profileError.message}`,
+          });
+        }
       }
 
       const { data: quiz, error: quizError } = await supabase
@@ -290,7 +302,7 @@ export const quizRouter = router({
 
       const { data: quizzes, error } = await supabase
         .from("quizzes")
-        .select("*, questions(count), answers(student_name)")
+        .select("id, title, subject, grade_level, code, created_at")
         .eq("teacher_id", input.teacherId)
         .order("created_at", { ascending: false });
 
@@ -301,19 +313,43 @@ export const quizRouter = router({
         });
       }
 
-      return (quizzes || []).map((q: any) => {
-        const studentSet = new Set((q.answers || []).map((a: any) => a.student_name));
-        return {
-          id: q.id,
-          title: q.title,
-          subject: q.subject,
-          gradeLevel: q.grade_level,
-          code: q.code,
-          createdAt: q.created_at,
-          totalQuestions: q.questions?.[0]?.count || 0,
-          totalStudents: studentSet.size,
-        };
-      });
+      const quizList = quizzes || [];
+      const quizIds = quizList.map((q) => q.id);
+
+      const [questionRows, answerRows] = quizIds.length > 0
+        ? await Promise.all([
+            supabase
+              .from("questions")
+              .select("id, quiz_id")
+              .in("quiz_id", quizIds),
+            supabase
+              .from("answers")
+              .select("quiz_id, student_name")
+              .in("quiz_id", quizIds),
+          ])
+        : [{ data: [] as any[] }, { data: [] as any[] }];
+
+      const questionCount = new Map<string, number>();
+      for (const row of questionRows.data || []) {
+        questionCount.set(row.quiz_id, (questionCount.get(row.quiz_id) || 0) + 1);
+      }
+
+      const studentsByQuiz = new Map<string, Set<string>>();
+      for (const row of answerRows.data || []) {
+        if (!studentsByQuiz.has(row.quiz_id)) studentsByQuiz.set(row.quiz_id, new Set());
+        studentsByQuiz.get(row.quiz_id)!.add(row.student_name);
+      }
+
+      return quizList.map((q: any) => ({
+        id: q.id,
+        title: q.title,
+        subject: q.subject,
+        gradeLevel: q.grade_level,
+        code: q.code,
+        createdAt: q.created_at,
+        totalQuestions: questionCount.get(q.id) || 0,
+        totalStudents: studentsByQuiz.get(q.id)?.size || 0,
+      }));
     }),
 
   generateWithAI: publicProcedure
@@ -323,10 +359,8 @@ export const quizRouter = router({
         const result = await generateQuizWithLLM(input.prompt, input.numQuestions);
         return result;
       } catch (err: any) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: `Gagal generate kuis otomatis: ${err.message}`,
-        });
+        const { code, message } = llmErrorMessage("Gagal generate kuis otomatis", err);
+        throw new TRPCError({ code, message });
       }
     }),
 

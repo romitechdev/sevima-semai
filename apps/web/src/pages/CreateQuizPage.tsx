@@ -8,11 +8,30 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 
 function emptyQuestion() {
   return { text: "", options: ["", "", "", ""] as [string, string, string, string], correctIndex: 0 };
+}
+
+interface AgentState {
+  actionType: string;
+  title: string;
+  summary: string;
+  details: string;
+  actionPayload: any;
+}
+
+function readAgentState(): AgentState | null {
+  try {
+    const raw = sessionStorage.getItem("semai_agent_result");
+    if (!raw) return null;
+    return JSON.parse(raw) as AgentState;
+  } catch {
+    return null;
+  }
 }
 
 export const CreateQuizPage: React.FC = () => {
@@ -28,12 +47,52 @@ export const CreateQuizPage: React.FC = () => {
   const [aiNumQuestions, setAiNumQuestions] = useState(5);
   const [showAiModal, setShowAiModal] = useState(false);
   const [questions, setQuestions] = useState([emptyQuestion()]);
+  const [agentInfo, setAgentInfo] = useState<AgentState | null>(null);
 
   useEffect(() => {
-    const state = location.state as { initialPrompt?: string } | null;
+    const state = location.state as {
+      initialPrompt?: string;
+      numQuestions?: number;
+      subject?: string;
+      gradeLevel?: string;
+      agentTitle?: string;
+      agentSummary?: string;
+      agentDetails?: string;
+    } | null;
+
     if (state?.initialPrompt) {
       setAiPrompt(state.initialPrompt);
+      if (state.numQuestions) setAiNumQuestions(state.numQuestions);
+      if (state.subject) setSubject(state.subject);
+      if (state.gradeLevel) setGradeLevel(state.gradeLevel);
       setShowAiModal(true);
+      if (state.agentTitle) {
+        setAgentInfo({
+          actionType: "CREATE_QUIZ",
+          title: state.agentTitle,
+          summary: state.agentSummary || "",
+          details: state.agentDetails || "",
+          actionPayload: {
+            promptText: state.initialPrompt,
+            numQuestions: state.numQuestions,
+            subject: state.subject,
+            gradeLevel: state.gradeLevel,
+          },
+        });
+      }
+    } else {
+      const stored = readAgentState();
+      if (stored?.actionType === "CREATE_QUIZ") {
+        const p = stored.actionPayload || {};
+        if (p.promptText || p.topic) {
+          setAiPrompt(p.promptText || p.topic || "");
+          if (p.numQuestions) setAiNumQuestions(p.numQuestions);
+          if (p.subject) setSubject(p.subject);
+          if (p.gradeLevel) setGradeLevel(p.gradeLevel);
+          setShowAiModal(true);
+        }
+        setAgentInfo(stored);
+      }
     }
   }, [location.state]);
 
@@ -49,7 +108,17 @@ export const CreateQuizPage: React.FC = () => {
       if (generated.title) setTitle(generated.title);
       if (generated.subject) setSubject(generated.subject);
       if (generated.gradeLevel) setGradeLevel(generated.gradeLevel);
-      if (generated.questions && generated.questions.length > 0) setQuestions(generated.questions);
+      if (Array.isArray(generated.questions) && generated.questions.length > 0) {
+        const valid = generated.questions
+          .filter((q: any) => q && typeof q.text === "string" && q.text.trim() && Array.isArray(q.options) && q.options.length === 4)
+          .map((q: any) => ({
+            text: q.text,
+            options: q.options.slice(0, 4) as [string, string, string, string],
+            correctIndex: Number.isInteger(q.correctIndex) ? Math.min(3, Math.max(0, q.correctIndex)) : 0,
+          }));
+        if (valid.length > 0) setQuestions(valid);
+        else setError("Hasil AI tidak valid. Coba lagi dengan topik yang lebih jelas.");
+      }
       setShowAiModal(false);
       setAiPrompt("");
     } catch (err: any) {
@@ -67,9 +136,30 @@ export const CreateQuizPage: React.FC = () => {
     e.preventDefault();
     setError(null);
     if (!user) { setError("Silakan login terlebih dahulu."); return; }
+    if (!title.trim()) { setError("Judul kuis wajib diisi."); return; }
+    if (!subject.trim()) { setError("Mata pelajaran wajib diisi."); return; }
+    if (!gradeLevel.trim()) { setError("Kelas / tingkat wajib diisi."); return; }
     if (questions.length < 1) { setError("Kuis harus memiliki minimal 1 soal."); return; }
+    for (let i = 0; i < questions.length; i++) {
+      const q = questions[i];
+      if (!q.text.trim()) { setError(`Soal nomor ${i + 1}: pertanyaan wajib diisi.`); return; }
+      for (let j = 0; j < 4; j++) {
+        if (!q.options[j].trim()) { setError(`Soal nomor ${i + 1}: pilihan ${String.fromCharCode(65 + j)} wajib diisi.`); return; }
+      }
+    }
     try {
-      const res = await createMutation.mutateAsync({ teacherId: user.id, title, subject, gradeLevel, questions });
+      const res = await createMutation.mutateAsync({
+        teacherId: user.id,
+        title: title.trim(),
+        subject: subject.trim(),
+        gradeLevel: gradeLevel.trim(),
+        questions: questions.map((q) => ({
+          text: q.text.trim(),
+          options: q.options.map((o) => o.trim()) as [string, string, string, string],
+          correctIndex: q.correctIndex,
+        })),
+      });
+      sessionStorage.removeItem("semai_agent_result");
       navigate(`/monitor/${res.quiz.id}`);
     } catch (err: any) {
       setError(err.message || "Gagal membuat kuis.");
@@ -96,6 +186,32 @@ export const CreateQuizPage: React.FC = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Agent result banner */}
+        {agentInfo && (
+          <Card className="border-neutral-900 bg-neutral-50">
+            <CardContent className="pt-4 flex flex-col gap-2">
+              <div className="flex items-center gap-2">
+                <Badge variant="secondary" className="font-mono">Agent</Badge>
+                <p className="text-sm font-medium text-neutral-950">{agentInfo.title}</p>
+              </div>
+              {agentInfo.summary && <p className="text-xs text-neutral-600">{agentInfo.summary}</p>}
+              <div className="flex items-center gap-2 flex-wrap">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="rounded-sm text-xs"
+                  onClick={() => {
+                    setAgentInfo(null);
+                    sessionStorage.removeItem("semai_agent_result");
+                  }}
+                >
+                  Tutup Info Agent
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* AI Modal */}
         <Dialog open={showAiModal} onOpenChange={setShowAiModal}>

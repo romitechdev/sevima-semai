@@ -29,7 +29,7 @@ export const AboutPage: React.FC = () => {
 
   return (
     <div className="min-dvh bg-white text-neutral-900 flex flex-col">
-      <PublicHeader active="/tentang" showLogin={false} />
+      <PublicHeader active="/tentang" />
 
       <main id="main-content" className="flex-1 max-w-4xl mx-auto w-full px-4 sm:px-6 py-12 sm:py-16">
         <span className="text-xs uppercase tracking-wider text-neutral-400 select-none">Tentang Semai</span>

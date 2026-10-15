@@ -1,6 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import { publicProcedure, router } from "../lib/trpc.js";
-import { generateMaterialWithLLM } from "../lib/llm.js";
+import { generateMaterialWithLLM, llmErrorMessage } from "../lib/llm.js";
 import { getSupabaseAdmin } from "../lib/supabase.js";
 import { z } from "zod";
 
@@ -27,10 +27,8 @@ export const materialRouter = router({
       try {
         material = await generateMaterialWithLLM(input.topic);
       } catch (err: any) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: `Gagal menyusun materi pembelajaran: ${err.message}`,
-        });
+        const { code, message } = llmErrorMessage("Gagal menyusun materi pembelajaran", err);
+        throw new TRPCError({ code, message });
       }
 
       await ensureProfile(supabase, input.teacherId);
